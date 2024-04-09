@@ -27,3 +27,9 @@ td {
 input {
     background-color: rgb(245, 245, 187);
 }
+
+.chosen {
+    border-color: rgb(47, 45, 194);
+    border-style: solid;
+    border-width: 4px;
+}

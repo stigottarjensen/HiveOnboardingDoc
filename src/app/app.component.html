@@ -1,14 +1,23 @@
 <table>
+  <tr *ngFor="let item of doc_list; let i=index;"
+  (click)="setDoc(i)">
+    <td [ngClass]="{'chosen':i===domainIndex}">&nbsp;domain</td>
+    <td>&nbsp;{{item.domain}}</td>
+    <td>&nbsp;serviceName</td>
+    <td>&nbsp;{{item.serviceName}}</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<table>
   <tr *ngFor="let item of doc_keys">
     <td>&nbsp;{{item}}</td>
-    <td><input *ngIf="!item.includes('Url')" 
-                [(ngModel)]="the_doc[item]" 
-                (change)="input_changed($event)"/>
+    <td><input *ngIf="!item.includes('Url')" [(ngModel)]="the_doc[item]" (change)="input_changed($event)" />
       <span *ngIf="item.includes('Url')">{{the_doc[item]}}</span>
     </td>
   </tr>
 </table>
 <button (click)="save()">Lagre</button>
-  <pre>
-    {{result}}
-  </pre>
+<p>
+  {{result}}
+</p>
+<p>{{the_doc_text}}</p>

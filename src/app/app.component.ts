@@ -9,22 +9,23 @@ import { Component, OnInit } from '@angular/core';
 export class AppComponent implements OnInit {
   title = 'HiveOnboardingDoc';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   httpHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
   });
 
-  makeUrls(doc:any):void {
-    const domain = doc.domain+'.'+doc.rootDomain;
-    doc.domainUrl ='https://'+domain;
-    doc.hostUrl = domain+':443';
-    doc.websocketUrl='wss://'+domain+'/ws-c';
-    doc.serviceUrl='https://'+domain+'/'+doc.serviceName;
+  makeUrls(doc: any): void {
+    const domain = doc.domain + '.' + doc.rootDomain;
+    doc.domainUrl = 'https://' + domain;
+    doc.hostUrl = domain + ':443';
+    doc.websocketUrl = 'wss://' + domain + '/ws-c';
+    doc.serviceUrl = 'https://' + domain + '/' + doc.serviceName;
   }
 
   doc_template = {
-    rootDomain:'norhive.com',
+    companyId: 1234,
+    rootDomain: 'norhive.com',
     domainUrl: '',
     hostUrl: '',
     websocketUrl: '',
@@ -61,20 +62,30 @@ export class AppComponent implements OnInit {
   };
 
   company_template = {
-    name:'IBM',
-    orgnr:999888777,
-    contact_person:'Reodor Felgen',
-    email:'olebrum@hundremeterskogen.am',
-    telephone:'19283746'
+    id: 1234,
+    name: 'IBM',
+    orgnr: 999888777,
+    contact_person: 'Reodor Felgen',
+    email: 'olebrum@hundremeterskogen.am',
+    telephone: '19283746',
   };
 
   the_doc: any = {};
+  the_doc_text: string = '';
   doc_keys: any[] = [];
+  doc_list: any[] = [];
+  domainIndex = 0;
 
-  ngOnInit(): void {
-    this.the_doc = JSON.parse(JSON.stringify(this.doc_template));
+  setDoc(i: number): void {
+    this.domainIndex = i;
+    this.the_doc_text = JSON.stringify(this.doc_list[i]);
+    this.the_doc = JSON.parse(this.the_doc_text);
     this.makeUrls(this.the_doc);
     this.doc_keys = Object.keys(this.the_doc);
+  }
+
+  ngOnInit(): void {
+    this.getDocs();
   }
 
   input_changed(event: any): void {
@@ -92,19 +103,33 @@ export class AppComponent implements OnInit {
 
   host = 'http://localhost:8778';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
-  result:string = '';
+  result: string = '';
+
+  getDocs(): void {
+    this.http
+      .get(this.host + this.webApp + this.getRandomUrl(), {
+        headers: this.httpHeaders,
+        responseType: 'json',
+        observe: 'body',
+        withCredentials: false,
+      })
+      .subscribe((result: any) => {
+        this.doc_list = result;
+        this.setDoc(0);
+      });
+  }
 
   save(): void {
     this.http
-    .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {
-      headers: this.httpHeaders,
-      responseType: 'json',
-      observe: 'body',
-      withCredentials: false,
-    })
-    .subscribe((result: any) => {
-      this.result = JSON.stringify(result);
-    });
+      .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {
+        headers: this.httpHeaders,
+        responseType: 'text',
+        observe: 'body',
+        withCredentials: false,
+      })
+      .subscribe((result: any) => {
+        this.result = result;
+      });
   }
 
   getRandomUrl(): string {
