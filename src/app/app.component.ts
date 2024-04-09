@@ -15,11 +15,20 @@ export class AppComponent implements OnInit {
     'Content-Type': 'application/json',
   });
 
+  makeUrls(doc:any):void {
+    const domain = doc.domain+'.'+doc.rootDomain;
+    doc.domainUrl ='https://'+domain;
+    doc.hostUrl = domain+':443';
+    doc.websocketUrl='wss://'+domain+'/ws-c';
+    doc.serviceUrl='https://'+domain+'/'+doc.serviceName;
+  }
+
   doc_template = {
-    domainUrl: 'https://faciliate.nornirhive.com',
-    hostUrl: 'faciliate.nornirhive.com:443',
-    websocketUrl: 'wss://faciliate.nornirhive.com/ws-c',
-    serviceUrl: 'https://faciliate.nornirhive.com/swg2',
+    rootDomain:'norhive.com',
+    domainUrl: '',
+    hostUrl: '',
+    websocketUrl: '',
+    serviceUrl: '',
     authToken: 'lk34jroi2jdvllASLDKJF2sfSDFH2jloijr2o3ndf',
     userName: 'faciliate@synxdns.com',
     domainName: 'faciliate',
@@ -51,15 +60,28 @@ export class AppComponent implements OnInit {
     receiveGhost: '3',
   };
 
+  company_template = {
+    name:'IBM',
+    orgnr:999888777,
+    contact_person:'Reodor Felgen',
+    email:'olebrum@hundremeterskogen.am',
+    telephone:'19283746'
+  };
+
   the_doc: any = {};
   doc_keys: any[] = [];
 
   ngOnInit(): void {
     this.the_doc = JSON.parse(JSON.stringify(this.doc_template));
+    this.makeUrls(this.the_doc);
     this.doc_keys = Object.keys(this.the_doc);
   }
 
   input_changed(event: any): void {
+    this.makeUrls(this.the_doc);
+  }
+
+  _input_changed(event: any): void {
     this.the_doc.namespace =
       this.the_doc.sub_domain +
       '.' +
@@ -115,3 +137,16 @@ export class AppComponent implements OnInit {
 //   is_active:true,
 //   keycloack_url: ""
 // };
+
+// rootDomain:'norhive.com',
+// domainUrl: 'https://faciliate.nornirhive.com',
+// hostUrl: 'faciliate.nornirhive.com:443',
+// websocketUrl: 'wss://faciliate.nornirhive.com/ws-c',
+// serviceUrl: 'https://faciliate.nornirhive.com/swg2',
+// authToken: 'lk34jroi2jdvllASLDKJF2sfSDFH2jloijr2o3ndf',
+// userName: 'faciliate@synxdns.com',
+// domainName: 'faciliate',
+// domain: 'faciliate',
+// serviceName: 'swg2',
+// password: 'passwordFaciliate24',
+// feature: 'd',

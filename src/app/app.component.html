@@ -1,10 +1,10 @@
 <table>
   <tr *ngFor="let item of doc_keys">
-    <td>{{item}}</td>
-    <td><input *ngIf="item!=='namespace'" 
+    <td>&nbsp;{{item}}</td>
+    <td><input *ngIf="!item.includes('Url')" 
                 [(ngModel)]="the_doc[item]" 
                 (change)="input_changed($event)"/>
-      <span *ngIf="item==='namespace'">{{the_doc[item]}}</span>
+      <span *ngIf="item.includes('Url')">{{the_doc[item]}}</span>
     </td>
   </tr>
 </table>
