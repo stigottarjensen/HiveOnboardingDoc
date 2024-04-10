@@ -78,6 +78,11 @@ export class AppComponent implements OnInit {
 
   setDoc(i: number): void {
     this.domainIndex = i;
+    if (this.doc_list.length < 1) {
+      const jt = JSON.stringify(this.doc_template);
+      this.domainIndex = i = 0;
+      this.doc_list.push(JSON.parse(jt));
+    }
     this.the_doc_text = JSON.stringify(this.doc_list[i]);
     this.the_doc = JSON.parse(this.the_doc_text);
     this.makeUrls(this.the_doc);
