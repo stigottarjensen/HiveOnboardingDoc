@@ -87,6 +87,23 @@ export class AppComponent implements OnInit {
     this.the_doc = JSON.parse(this.the_doc_text);
     this.makeUrls(this.the_doc);
     this.doc_keys = Object.keys(this.the_doc);
+    this.doc_list.sort((a, b) => {
+      if (a.domain > b.domain) return 1;
+      if (a.domain < b.domain) return -1;
+      if (a.domain === b.domain) {
+        if (a.serviceName > b.serviceName) return 1;
+        if (a.serviceName < b.serviceName) return -1;
+      }
+      return 0;
+    });
+  }
+
+  makeTreeMenuList():Map<string,[]>{
+    const m = new Map<string,[]>();
+    this.doc_list.forEach((element:any) => {
+
+    });
+    return m;
   }
 
   ngOnInit(): void {

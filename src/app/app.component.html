@@ -1,21 +1,30 @@
-<table>
-  <tr *ngFor="let item of doc_list; let i=index;"
-  (click)="setDoc(i)">
-    <td [ngClass]="{'chosen':i===domainIndex}">&nbsp;domain</td>
-    <td>&nbsp;{{item.domain}}</td>
-    <td>&nbsp;serviceName</td>
-    <td>&nbsp;{{item.serviceName}}</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-<table>
-  <tr *ngFor="let item of doc_keys">
-    <td>&nbsp;{{item}}</td>
-    <td><input *ngIf="!item.includes('Url')" [(ngModel)]="the_doc[item]" (change)="input_changed($event)" />
-      <span *ngIf="item.includes('Url')">{{the_doc[item]}}</span>
-    </td>
-  </tr>
-</table>
+<div class="container">
+  <div class="sidemenu">
+    <!-- <ul>
+      <li *ngFor="let item of doc_list; let i=index;" 
+        (click)="setDoc(i)">{{item.domain}}</li>
+    </ul> -->
+    <table class="side">
+      <tr>
+        <th>Domain</th>
+        <th>Servicename</th>
+      </tr>
+      <tr *ngFor="let item of doc_list; let i=index;" (click)="setDoc(i)">
+        <td [ngClass]="{'chosen':i===domainIndex}">&nbsp;{{item.domain}}</td>
+        <td>&nbsp;{{item.serviceName}}</td>
+      </tr>
+    </table>
+    <div class="bottom">&nbsp;</div>
+  </div>
+  <table>
+    <tr *ngFor="let item of doc_keys">
+      <td>&nbsp;{{item}}</td>
+      <td><input *ngIf="!item.includes('Url')" [(ngModel)]="the_doc[item]" (change)="input_changed($event)" />
+        <span *ngIf="item.includes('Url')">{{the_doc[item]}}</span>
+      </td>
+    </tr>
+  </table>
+</div>
 <button (click)="save()">Lagre</button>
 <p>
   {{result}}
