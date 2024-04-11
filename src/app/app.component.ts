@@ -75,13 +75,30 @@ export class AppComponent implements OnInit {
   doc_keys: any[] = [];
   doc_list: any[] = [];
   domainIndex = 0;
+  treeMenu!: Map<string, any[]>;
+  chosenItem: string = '';
 
-  setDoc(i: number): void {
-    this.domainIndex = i;
+  chosen(domain: string, service: string):boolean {
+    return this.chosenItem === domain+'_'+service;
+  }
+
+  setDoc(domain?: string, service?: string): void {
+    let i = 0;
     if (this.doc_list.length < 1) {
       const jt = JSON.stringify(this.doc_template);
-      this.domainIndex = i = 0;
+      this.domainIndex = 0;
       this.doc_list.push(JSON.parse(jt));
+    }
+    if (domain) {
+      this.chosenItem = domain + '_' + service;
+      i = this.doc_list.findIndex(
+        (element) =>
+          domain === element.domain && service === element.serviceName
+      );
+    } else {
+      i = 0;
+      this.chosenItem =
+        this.doc_list[0].domain + '_' + this.doc_list[0].serviceName;
     }
     this.the_doc_text = JSON.stringify(this.doc_list[i]);
     this.the_doc = JSON.parse(this.the_doc_text);
@@ -96,13 +113,22 @@ export class AppComponent implements OnInit {
       }
       return 0;
     });
+    this.treeMenu = this.makeTreeMenuList();
   }
 
-  makeTreeMenuList():Map<string,[]>{
-    const m = new Map<string,[]>();
-    this.doc_list.forEach((element:any) => {
-
+  makeTreeMenuList(): Map<string, any[]> {
+    const m = new Map<string, any[]>();
+    this.doc_list.forEach((element: any) => {
+      let snList = m.get(element.domain);
+      if (!snList) {
+        const sl = [element.serviceName];
+        m.set(element.domain, sl);
+      } else {
+        snList.push(element.serviceName);
+      }
     });
+    console.log(m);
+
     return m;
   }
 
@@ -137,7 +163,7 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         this.doc_list = result;
-        this.setDoc(0);
+        this.setDoc();
       });
   }
 

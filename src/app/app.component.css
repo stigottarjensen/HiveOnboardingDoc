@@ -13,10 +13,16 @@ tr:nth-child(odd) {
     background-color: rgb(198, 194, 195);
 }
 
-td, input {
+td, input ,li {
     font-size: 18px;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Sans Unicode';
     width: 300px;
+    border-radius: 6px;
+}
+
+li {
+    width: 200px;
+    padding: 4px;
 }
 
 td {
@@ -29,9 +35,8 @@ input {
 }
 
 .chosen {
-    border-color: rgb(47, 45, 194);
-    border-style: solid;
-    border-width: 4px;
+    background-color: rgb(177, 173, 174);
+    color: white;
 }
 
 .container {
