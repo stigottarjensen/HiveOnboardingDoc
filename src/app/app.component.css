@@ -10,7 +10,7 @@ tr:nth-child(even) {
 }
 
 tr:nth-child(odd) {
-    background-color: rgb(198, 194, 195);
+    background-color: rgb(218, 213, 214);
 }
 
 td, input ,li {
@@ -30,13 +30,19 @@ td {
     padding-left: 5x;
 }
 
+.active {
+    background-color: rgb(246, 106, 106);
+}
+
 input {
     background-color: rgb(254, 254, 239);
 }
 
 .chosen {
-    background-color: rgb(177, 173, 174);
+    background-color: rgb(200, 189, 191);
     color: white;
+    font-weight: 500;
+    font-family: 'Comic sans';
 }
 
 .container {
@@ -47,7 +53,7 @@ input {
 
 .sidemenu {
     width: 20%;
-    background-color: rgb(235, 241, 239);
+    background-color: rgb(237, 244, 242);
 }
 
 .bottom {

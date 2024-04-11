@@ -21,6 +21,9 @@ export class AppComponent implements OnInit {
     doc.hostUrl = domain + ':443';
     doc.websocketUrl = 'wss://' + domain + '/ws-c';
     doc.serviceUrl = 'https://' + domain + '/' + doc.serviceName;
+    doc.xml = this.makeXml('rtw',doc.DataSkjema);
+    doc.cmdxml = this.makeXml('cmd',doc.KommandoSkjema);
+    //doc.links = this.makeXml('xml,links,')
   }
 
   doc_template = {
@@ -38,8 +41,10 @@ export class AppComponent implements OnInit {
     password: 'passwordFaciliate24',
     feature: 'd',
     active: 'true',
-    xml: '<rtw><timestamp></timestamp><sender></sender><receiver></receiver><topic></topic><refid></refid><payload></payload></rtw>',
-    cmdxml: '<cmd><action></action><param1></param1></cmd>',
+    DataSkjema:'',
+    xml: '<rtw></rtw>',
+    KommandoSkjema:'',
+    cmdxml: '<cmd></cmd>',
     webjs: '',
     timeForChannelRequest: '86000',
     desc: 'test swg2',
@@ -52,6 +57,7 @@ export class AppComponent implements OnInit {
     refobjectID: '',
     refDomain: '',
     refService: '',
+    LinkSkjema:'',
     links:
       '<xml><links><link><uri>gateway/dash7</uri><active>true</active></link></links></xml>',
     newUserName: '',
@@ -82,11 +88,32 @@ export class AppComponent implements OnInit {
     return this.chosenItem === domain+'_'+service;
   }
 
+  makeXml(mainTags:string, values:string ) {
+    if (!values) return'';
+    const valList = values.split(',');
+    const mainList = mainTags.split(',');
+    let end = '';
+    let start = '';
+    mainList.forEach((t)=> {start+='<'+t+'>'; end += '</'+t+'>'});
+    valList.forEach((t)=> {start+='<'+t+'>' +'</'+t+'>'});
+    return start+end;
+  }
+
+  copyContent = async () => {
+    try {
+      await navigator.clipboard.writeText(this.the_doc_text);
+      console.log('Content copied to clipboard');
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  }
+
   setDoc(domain?: string, service?: string): void {
     let i = 0;
-    if (this.doc_list.length < 1) {
+    if (!this.doc_list ||this.doc_list.length < 1) {
       const jt = JSON.stringify(this.doc_template);
       this.domainIndex = 0;
+      if (!this.doc_list) this.doc_list=[];
       this.doc_list.push(JSON.parse(jt));
     }
     if (domain) {
@@ -136,8 +163,14 @@ export class AppComponent implements OnInit {
     this.getDocs();
   }
 
+  changed = false;
   input_changed(event: any): void {
     this.makeUrls(this.the_doc);
+    this.changed = true;
+  }
+
+  readonlyItems(item:string):boolean {
+    return item.includes('Url') || item.includes('xml') || item.includes('link')
   }
 
   _input_changed(event: any): void {
@@ -167,7 +200,9 @@ export class AppComponent implements OnInit {
       });
   }
 
+
   save(): void {
+    if (!this.changed) return;
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {
         headers: this.httpHeaders,
@@ -176,7 +211,8 @@ export class AppComponent implements OnInit {
         withCredentials: false,
       })
       .subscribe((result: any) => {
-        this.result = result;
+        this.getDocs();
+        this.changed = false;
       });
   }
 

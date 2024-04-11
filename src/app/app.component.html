@@ -1,3 +1,4 @@
+<h2>Nornir </h2>
 <div class="container">
   <div class="sidemenu">
     <ul>
@@ -12,16 +13,80 @@
     <div class="bottom">&nbsp;</div>
   </div>
   <table>
-    <tr *ngFor="let item of doc_keys">
-      <td>&nbsp;{{item}}</td>
-      <td><input *ngIf="!item.includes('Url')" [(ngModel)]="the_doc[item]" (change)="input_changed($event)" />
-        <span *ngIf="item.includes('Url')">{{the_doc[item]}}</span>
+    <tr>
+      <td>HIVE ROOT Domain</td>
+      <td><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td>Brukernavn</td>
+      <td><input [(ngModel)]="the_doc.userName" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td>Passord</td>
+      <td><input [(ngModel)]="the_doc.password" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td>Domene navn</td>
+      <td><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td>Servis navn</td>
+      <td><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td>Domene url</td>
+      <td><span>{{the_doc['domainUrl']}}</span>
+      </td>
+    </tr>
+    <tr>
+      <td>Host url</td>
+      <td><span>{{the_doc['hostUrl']}}</span>
+      </td>
+    </tr>
+    <tr>
+      <td>Servis url</td>
+      <td><span>{{the_doc['serviceUrl']}}</span>
+      </td>
+    </tr>
+    <tr>
+      <td>Websocket url</td>
+      <td><span>{{the_doc['websocketUrl']}}</span>
+      </td>
+    </tr>
+    <tr>
+      <td>Data skjema</td>
+      <td><input [(ngModel)]="the_doc.DataSkjema" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><span>{{the_doc['xml']}}</span>
+      </td>
+    </tr>
+    <tr>
+      <td>Kommando skjema</td>
+      <td><input [(ngModel)]="the_doc.KommandoSkjema" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2"><span>{{the_doc['cmdxml']}}</span>
       </td>
     </tr>
   </table>
+  <!-- <table>
+    <span *ngIf="readonlyItems(item)">{{the_doc[item]}}</span>
+    <tr *ngFor="let item of doc_keys">
+      <td>&nbsp;{{item}}</td>
+      <td><input *ngIf="!readonlyItems(item)" [(ngModel)]="the_doc[item]" (change)="input_changed($event)" />
+        <span *ngIf="readonlyItems(item)">{{the_doc[item]}}</span>
+      </td>
+    </tr>
+  </table> -->
 </div>
-<button (click)="save()">Lagre</button>
-<p>
-  {{result}}
-</p>
+<button (click)="save()" [ngClass]="{'active':changed}">Lagre</button>
+<button (click)="copyContent()">Kopier json</button>
 <p>{{the_doc_text}}</p>
