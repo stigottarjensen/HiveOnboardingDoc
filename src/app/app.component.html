@@ -2,20 +2,33 @@
 <div class="container">
   <div class="sidemenu">
     <ul>
-      <li *ngFor="let domain of treeMenu | keyvalue;">&nbsp;{{domain.key}}
+      <li *ngFor="let root of treeMenu | keyvalue;">&nbsp;{{root.key}}
         <ul>
-          <li *ngFor="let service of domain.value" (click)="setDoc(domain.key, service)"
-            [ngClass]="{'chosen':chosen(domain.key, service)}">&nbsp;{{service}}</li>
+          <li *ngFor="let domain of root.value | keyvalue;">&nbsp;{{domain.key}}
+            <ul>
+              <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)"
+                [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">&nbsp;{{service}}</li>
+            </ul>
+          </li>
         </ul>
       </li>
-
     </ul>
     <div class="bottom">&nbsp;</div>
   </div>
   <table>
     <tr>
-      <td>HIVE ROOT Domain</td>
+      <td class="marked-td">HIVE ROOT Domain</td>
       <td><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td class="marked-td">Domene navn</td>
+      <td><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" />
+      </td>
+    </tr>
+    <tr>
+      <td class="marked-td">Servis navn</td>
+      <td><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
@@ -28,16 +41,7 @@
       <td><input [(ngModel)]="the_doc.password" (change)="input_changed($event)" />
       </td>
     </tr>
-    <tr>
-      <td>Domene navn</td>
-      <td><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td>Servis navn</td>
-      <td><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
-      </td>
-    </tr>
+    
     <tr>
       <td>Domene url</td>
       <td><span>{{the_doc['domainUrl']}}</span>
@@ -77,16 +81,9 @@
       </td>
     </tr>
   </table>
-  <!-- <table>
-    <span *ngIf="readonlyItems(item)">{{the_doc[item]}}</span>
-    <tr *ngFor="let item of doc_keys">
-      <td>&nbsp;{{item}}</td>
-      <td><input *ngIf="!readonlyItems(item)" [(ngModel)]="the_doc[item]" (change)="input_changed($event)" />
-        <span *ngIf="readonlyItems(item)">{{the_doc[item]}}</span>
-      </td>
-    </tr>
-  </table> -->
 </div>
-<button (click)="save()" [ngClass]="{'active':changed}">Lagre</button>
-<button (click)="copyContent()">Kopier json</button>
-<p>{{the_doc_text}}</p>
+<div class="bdiv">
+  <button (click)="save()" [ngClass]="{'active':changed}">Lagre</button>
+  <button (click)="copyContent()">Kopier json</button>
+  <pre class="json-text">{{the_doc_text}}</pre>
+</div>

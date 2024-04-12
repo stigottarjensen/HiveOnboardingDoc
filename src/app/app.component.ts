@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { doc_template } from './app.constants';
 
 @Component({
   selector: 'app-root',
@@ -21,82 +22,39 @@ export class AppComponent implements OnInit {
     doc.hostUrl = domain + ':443';
     doc.websocketUrl = 'wss://' + domain + '/ws-c';
     doc.serviceUrl = 'https://' + domain + '/' + doc.serviceName;
-    doc.xml = this.makeXml('rtw',doc.DataSkjema);
-    doc.cmdxml = this.makeXml('cmd',doc.KommandoSkjema);
+    doc.xml = this.makeXml('rtw', doc.DataSkjema);
+    doc.cmdxml = this.makeXml('cmd', doc.KommandoSkjema);
     //doc.links = this.makeXml('xml,links,')
   }
-
-  doc_template = {
-    companyId: 1234,
-    rootDomain: 'norhive.com',
-    domainUrl: '',
-    hostUrl: '',
-    websocketUrl: '',
-    serviceUrl: '',
-    authToken: 'lk34jroi2jdvllASLDKJF2sfSDFH2jloijr2o3ndf',
-    userName: 'faciliate@synxdns.com',
-    domainName: 'faciliate',
-    domain: 'faciliate',
-    serviceName: 'swg2',
-    password: 'passwordFaciliate24',
-    feature: 'd',
-    active: 'true',
-    DataSkjema:'',
-    xml: '<rtw></rtw>',
-    KommandoSkjema:'',
-    cmdxml: '<cmd></cmd>',
-    webjs: '',
-    timeForChannelRequest: '86000',
-    desc: 'test swg2',
-    masterScript: '',
-    preMasterScript: '',
-    searchTerms: '',
-    instance: '3',
-    mapID: '',
-    objectID: '2',
-    refobjectID: '',
-    refDomain: '',
-    refService: '',
-    LinkSkjema:'',
-    links:
-      '<xml><links><link><uri>gateway/dash7</uri><active>true</active></link></links></xml>',
-    newUserName: '',
-    quantity: '5',
-    transactiontimeout: '24',
-    sendGhost: '1',
-    receiveGhost: '3',
-  };
-
-  company_template = {
-    id: 1234,
-    name: 'IBM',
-    orgnr: 999888777,
-    contact_person: 'Reodor Felgen',
-    email: 'olebrum@hundremeterskogen.am',
-    telephone: '19283746',
-  };
 
   the_doc: any = {};
   the_doc_text: string = '';
   doc_keys: any[] = [];
   doc_list: any[] = [];
   domainIndex = 0;
-  treeMenu!: Map<string, any[]>;
+  treeMenu!: Map<string, Map<string, any[]>>;
   chosenItem: string = '';
 
-  chosen(domain: string, service: string):boolean {
-    return this.chosenItem === domain+'_'+service;
+  chosen(root: string, domain: string, service: string): boolean {
+    return this.chosenItem === root + '_' + domain + '_' + service;
   }
 
-  makeXml(mainTags:string, values:string ) {
-    if (!values) return'';
+  makeXml(mainTags: string, values: string) {
+    if (!values) return '';
     const valList = values.split(',');
     const mainList = mainTags.split(',');
     let end = '';
     let start = '';
-    mainList.forEach((t)=> {start+='<'+t+'>'; end += '</'+t+'>'});
-    valList.forEach((t)=> {start+='<'+t+'>' +'</'+t+'>'});
-    return start+end;
+    mainList.forEach((s) => {
+      const t = s.trim();
+      start += '<' + t + '>';
+      end += '</' + t + '>';
+    });
+    valList.forEach((s) => {
+      const t = s.trim();
+      start += '<' + t + '>' + '</' + t + '>';
+    });
+    return start + end;
   }
 
   copyContent = async () => {
@@ -106,46 +64,59 @@ export class AppComponent implements OnInit {
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
-  }
+  };
 
-  setDoc(domain?: string, service?: string): void {
+  setDoc(root?: string, domain?: string, service?: string): void {
     let i = 0;
-    if (!this.doc_list ||this.doc_list.length < 1) {
-      const jt = JSON.stringify(this.doc_template);
+    if (!this.doc_list || this.doc_list.length < 1) {
+      const jt = JSON.stringify(doc_template);
       this.domainIndex = 0;
-      if (!this.doc_list) this.doc_list=[];
+      if (!this.doc_list) this.doc_list = [];
       this.doc_list.push(JSON.parse(jt));
     }
     if (domain) {
-      this.chosenItem = domain + '_' + service;
+      this.chosenItem = root + '_' + domain + '_' + service;
       i = this.doc_list.findIndex(
         (element) =>
-          domain === element.domain && service === element.serviceName
+          root === element.rootDomain &&
+          domain === element.domain &&
+          service === element.serviceName
       );
     } else {
       i = 0;
       this.chosenItem =
-        this.doc_list[0].domain + '_' + this.doc_list[0].serviceName;
+        this.doc_list[0].rootDomain +
+        '_' +
+        this.doc_list[0].domain +
+        '_' +
+        this.doc_list[0].serviceName;
     }
-    this.the_doc_text = JSON.stringify(this.doc_list[i]);
-    this.the_doc = JSON.parse(this.the_doc_text);
+    this.the_doc = this.doc_list[i];
+    this.the_doc_text = JSON.stringify(this.the_doc, null, 4);
     this.makeUrls(this.the_doc);
     this.doc_keys = Object.keys(this.the_doc);
     this.doc_list.sort((a, b) => {
+      if (a.rootDomain > b.rootDomain) return 1;
+      if (a.rootDomain < b.rootDomain) return -1;
       if (a.domain > b.domain) return 1;
       if (a.domain < b.domain) return -1;
-      if (a.domain === b.domain) {
-        if (a.serviceName > b.serviceName) return 1;
-        if (a.serviceName < b.serviceName) return -1;
-      }
+      if (a.serviceName > b.serviceName) return 1;
+      if (a.serviceName < b.serviceName) return -1;
       return 0;
     });
     this.treeMenu = this.makeTreeMenuList();
   }
 
-  makeTreeMenuList(): Map<string, any[]> {
-    const m = new Map<string, any[]>();
+  makeTreeMenuList(): Map<string, Map<string, any[]>> {
+    const M = new Map<string, Map<string, any[]>>();
     this.doc_list.forEach((element: any) => {
+      console.log(element.rootDomain, element.domain, element.serviceName);
+      
+      let m = M.get(element.rootDomain);
+      if (!m) {
+        m = new Map<string, any[]>();
+        M.set(element.rootDomain, m);
+      }
       let snList = m.get(element.domain);
       if (!snList) {
         const sl = [element.serviceName];
@@ -154,9 +125,9 @@ export class AppComponent implements OnInit {
         snList.push(element.serviceName);
       }
     });
-    console.log(m);
+    console.log(M);
 
-    return m;
+    return M;
   }
 
   ngOnInit(): void {
@@ -169,8 +140,10 @@ export class AppComponent implements OnInit {
     this.changed = true;
   }
 
-  readonlyItems(item:string):boolean {
-    return item.includes('Url') || item.includes('xml') || item.includes('link')
+  readonlyItems(item: string): boolean {
+    return (
+      item.includes('Url') || item.includes('xml') || item.includes('link')
+    );
   }
 
   _input_changed(event: any): void {
@@ -196,10 +169,11 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         this.doc_list = result;
+        console.log(result);
+        
         this.setDoc();
       });
   }
-
 
   save(): void {
     if (!this.changed) return;
