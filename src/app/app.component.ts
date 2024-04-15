@@ -24,13 +24,13 @@ export class AppComponent implements OnInit {
     doc.serviceUrl = 'https://' + domain + '/' + doc.serviceName;
     doc.xml = this.makeXml('rtw', doc.DataSkjema);
     doc.cmdxml = this.makeXml('cmd', doc.KommandoSkjema);
-    //doc.links = this.makeXml('xml,links,')
   }
 
   the_doc: any = {};
   the_doc_text: string = '';
   doc_keys: any[] = [];
   doc_list: any[] = [];
+  company_list: any[] = [];
   domainIndex = 0;
   treeMenu!: Map<string, Map<string, any[]>>;
   chosenItem: string = '';
@@ -157,11 +157,12 @@ export class AppComponent implements OnInit {
 
   host = 'http://localhost:8778';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
+  webAppComp =  '/HiveOnboardingDoc/GetCompanies';
   result: string = '';
 
   getDocs(): void {
     this.http
-      .get(this.host + this.webApp + this.getRandomUrl(), {
+      .get(this.host + this.webApp + this.getRandomUrl()+'?companyId=123456789', {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
@@ -172,6 +173,21 @@ export class AppComponent implements OnInit {
         console.log(result);
         
         this.setDoc();
+      });
+  }
+
+  getCompanies(): void {
+    this.http
+      .get(this.host + this.webAppComp + this.getRandomUrl(), {
+        headers: this.httpHeaders,
+        responseType: 'json',
+        observe: 'body',
+        withCredentials: false,
+      })
+      .subscribe((result: any) => {
+        this.company_list = result;
+        console.log(result);
+     
       });
   }
 
