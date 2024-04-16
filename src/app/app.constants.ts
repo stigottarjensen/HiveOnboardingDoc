@@ -1,5 +1,5 @@
 export const doc_template = {
-    companyId: 0,
+    companyId: '',
     rootDomain: '',
     domainUrl: '',
     hostUrl: '',

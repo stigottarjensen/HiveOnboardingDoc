@@ -1,4 +1,7 @@
 <h2>Nornir </h2>
+<select [(ngModel)]="selectedCompany" (change)="onCompChange($event)">
+  <option *ngFor="let comp of company_list;" [value]="comp.orgnr" [selected]="comp.orgnr===selectedCompany">{{comp.name}}</option>
+</select>
 <div class="container">
   <div class="sidemenu">
     <ul>

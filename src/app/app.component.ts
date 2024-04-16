@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { doc_template } from './app.constants';
+import { UrlSegmentGroup } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -131,7 +132,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getDocs();
+    this.getCompanies();
+ 
   }
 
   changed = false;
@@ -160,9 +162,11 @@ export class AppComponent implements OnInit {
   webAppComp =  '/HiveOnboardingDoc/GetCompanies';
   result: string = '';
 
-  getDocs(): void {
+  getDocs(compId?:string): void {
+    const urlen = this.host + this.webApp + this.getRandomUrl()+`?companyId=${compId}`;
+    
     this.http
-      .get(this.host + this.webApp + this.getRandomUrl()+'?companyId=123456789', {
+      .get(urlen , {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
@@ -170,10 +174,14 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         this.doc_list = result;
-        console.log(result);
-        
         this.setDoc();
       });
+  }
+
+  selectedCompany:string = '';
+  
+  onCompChange(event: any) {
+    this.getDocs(this.selectedCompany);
   }
 
   getCompanies(): void {
@@ -186,8 +194,8 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         this.company_list = result;
-        console.log(result);
-     
+        this.selectedCompany = this.company_list[0].orgnr; 
+        this.getDocs(this.selectedCompany);
       });
   }
 
@@ -201,7 +209,7 @@ export class AppComponent implements OnInit {
         withCredentials: false,
       })
       .subscribe((result: any) => {
-        this.getDocs();
+        this.getDocs(this.selectedCompany);
         this.changed = false;
       });
   }
