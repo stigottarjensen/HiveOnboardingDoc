@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { doc_template } from './app.constants';
-import { UrlSegmentGroup } from '@angular/router';
 
 @Component({
   selector: 'app-root',
