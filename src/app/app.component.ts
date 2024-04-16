@@ -137,6 +137,7 @@ export class AppComponent implements OnInit {
   }
 
   changed = false;
+
   input_changed(event: any): void {
     this.makeUrls(this.the_doc);
     this.changed = true;
@@ -148,14 +149,6 @@ export class AppComponent implements OnInit {
     );
   }
 
-  _input_changed(event: any): void {
-    this.the_doc.namespace =
-      this.the_doc.sub_domain +
-      '.' +
-      this.the_doc.hive_root_domain +
-      '/' +
-      this.the_doc.service_name;
-  }
 
   host = 'http://localhost:8778';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
@@ -201,6 +194,8 @@ export class AppComponent implements OnInit {
 
   save(): void {
     if (!this.changed) return;
+    if (!this.the_doc.companyId || this.the_doc.companyId.length!==9)
+      this.the_doc.companyId = this.selectedCompany;
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {
         headers: this.httpHeaders,

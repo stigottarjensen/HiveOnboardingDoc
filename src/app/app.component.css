@@ -4,6 +4,12 @@ table {
     border-color: black;
     width: fit-content;
 }
+select {
+    margin-left: 20px;
+    margin-bottom: 10px;
+    min-height: 25px;
+    font-size: 16px;
+}
 
 tr:nth-child(even) {
     background-color: rgb(249, 219, 219);
