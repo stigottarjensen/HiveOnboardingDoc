@@ -21,67 +21,83 @@
   </div>
   <table>
     <tr>
-      <td class="marked-td">HIVE ROOT Domain</td>
-      <td><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
+      <td colspan="2" class="marked-td">HIVE ROOT Domain</td>
+      <td colspan="2"><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
-      <td class="marked-td">Domene navn</td>
-      <td><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" />
+      <td colspan="2" class="marked-td">Domene navn</td>
+      <td colspan="2"><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
-      <td class="marked-td">Servis navn</td>
-      <td><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
+      <td colspan="2" class="marked-td">Servis navn</td>
+      <td colspan="2"><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
-      <td>Brukernavn</td>
-      <td><input [(ngModel)]="the_doc.userName" (change)="input_changed($event)" />
+      <td colspan="2">Brukernavn</td>
+      <td colspan="2"><input [(ngModel)]="the_doc.userName" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
-      <td>Passord</td>
-      <td><input [(ngModel)]="the_doc.password" (change)="input_changed($event)" />
+      <td colspan="2">Passord</td>
+      <td colspan="2"><input [(ngModel)]="the_doc.password" (change)="input_changed($event)" />
       </td>
     </tr>
     
     <tr>
-      <td>Domene url</td>
-      <td><span>{{the_doc['domainUrl']}}</span>
+      <td colspan="2">Domene url</td>
+      <td colspan="2"><span>{{the_doc['domainUrl']}}</span>
       </td>
     </tr>
     <tr>
-      <td>Host url</td>
-      <td><span>{{the_doc['hostUrl']}}</span>
+      <td colspan="2">Host url</td>
+      <td colspan="2"><span>{{the_doc['hostUrl']}}</span>
       </td>
     </tr>
     <tr>
-      <td>Servis url</td>
-      <td><span>{{the_doc['serviceUrl']}}</span>
+      <td colspan="2">Servis url</td>
+      <td colspan="2"><span>{{the_doc['serviceUrl']}}</span>
       </td>
     </tr>
     <tr>
-      <td>Websocket url</td>
-      <td><span>{{the_doc['websocketUrl']}}</span>
+      <td colspan="2">Websocket url</td>
+      <td colspan="2"><span>{{the_doc['websocketUrl']}}</span>
       </td>
     </tr>
     <tr>
-      <td>Data skjema</td>
-      <td><input [(ngModel)]="the_doc.DataSkjema" (change)="input_changed($event)" />
+      <td colspan="2">Data skjema</td>
+      <td colspan="2"><input [(ngModel)]="the_doc.DataSkjema" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
-      <td colspan="2"><span>{{the_doc['xml']}}</span>
+      <td colspan="4"><span>{{the_doc['xml']}}</span>
       </td>
     </tr>
     <tr>
-      <td>Kommando skjema</td>
-      <td><input [(ngModel)]="the_doc.KommandoSkjema" (change)="input_changed($event)" />
+      <td colspan="2">Kommando skjema</td>
+      <td colspan="2"><input [(ngModel)]="the_doc.KommandoSkjema" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
-      <td colspan="2"><span>{{the_doc['cmdxml']}}</span>
+      <td colspan="4"><span>{{the_doc['cmdxml']}}</span>
+      </td>
+    </tr>
+    <tr>
+      <td>Send ghost</td>
+      <td class="num_td"><input [(ngModel)]="the_doc.sendGhost" (change)="input_changed($event)" type="number" class="num_input"/>
+      </td>
+      <td>Receive ghost</td>
+      <td class="num_td"><input [(ngModel)]="the_doc.receiveGhost" (change)="input_changed($event)" type="number" class="num_input"/>
+      </td>
+    </tr>
+    <tr>
+      <td>Object id</td>
+      <td class="num_td"><input [(ngModel)]="the_doc.objectID" (change)="input_changed($event)" class="slim_input"/>
+      </td>
+      <td>Quantity</td>
+      <td class="num_td"><input [(ngModel)]="the_doc.quantity" (change)="input_changed($event)" class="slim_input"/>
       </td>
     </tr>
   </table>

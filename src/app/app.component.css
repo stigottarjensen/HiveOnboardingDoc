@@ -1,3 +1,5 @@
+
+
 table {
     border-style: solid;
     border-width: 1px;
@@ -12,15 +14,15 @@ select {
 }
 
 tr:nth-child(even) {
-    background-color: rgb(249, 219, 219);
+    background-color: rgb(247, 227, 227);
 }
 
 tr:nth-child(odd) {
-    background-color: rgb(207, 232, 248);
+    background-color: rgb(224, 237, 246);
 }
 
 .marked-td {
-    background-color: rgb(207, 239, 176);
+    background-color: rgb(229, 244, 216);
 }
 
 td, input ,li {
@@ -29,10 +31,22 @@ td, input ,li {
     width: 300px;
     border-radius: 6px;
 }
+.slim_input {
+    width: 70px;
+}
+.num_input {
+    width: 70px;
+    text-align: right;
+}
+.num_td {
+    width: 10%;
+    max-width: 10%;
+}
 
 li {
-    width: fit-content;
+    width:fit-content;
     padding: 4px;
+
 }
 
 td {
@@ -50,8 +64,9 @@ input {
 }
 
 .chosen {
-    background-color: rgb(200, 189, 191);
-    color: white;
+    border-color: rgb(145, 23, 46)!;
+    border-width: 2px;
+    border-style: solid;
     font-weight: 500;
     font-family: 'Comic sans';
 }
@@ -65,7 +80,7 @@ input {
 
 .sidemenu {
     width: fit-content;
-    background-color: rgb(237, 244, 242);
+    background-color: rgb(241, 245, 244);
 }
 
 .bottom {
