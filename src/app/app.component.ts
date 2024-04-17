@@ -111,7 +111,7 @@ export class AppComponent implements OnInit {
     const M = new Map<string, Map<string, any[]>>();
     this.doc_list.forEach((element: any) => {
       console.log(element.rootDomain, element.domain, element.serviceName);
-      
+
       let m = M.get(element.rootDomain);
       if (!m) {
         m = new Map<string, any[]>();
@@ -132,7 +132,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCompanies();
- 
   }
 
   changed = false;
@@ -148,17 +147,17 @@ export class AppComponent implements OnInit {
     );
   }
 
-
   host = 'http://localhost:8778';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
-  webAppComp =  '/HiveOnboardingDoc/GetCompanies';
+  webAppComp = '/HiveOnboardingDoc/GetCompanies';
   result: string = '';
 
-  getDocs(compId?:string): void {
-    const urlen = this.host + this.webApp + this.getRandomUrl()+`?companyId=${compId}`;
-    
+  getDocs(compId?: string): void {
+    const urlen =
+      this.host + this.webApp + this.getRandomUrl() + `?companyId=${compId}`;
+
     this.http
-      .get(urlen , {
+      .get(urlen, {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
@@ -166,12 +165,16 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         this.doc_list = result;
+        if (this.doc_list.length<1) {
+          this.doc_list.push(JSON.parse(JSON.stringify(doc_template)));
+          this.doc_list[0].companyId = compId;
+        }
         this.setDoc();
       });
   }
 
-  selectedCompany:string = '';
-  
+  selectedCompany: string = '';
+
   onCompChange(event: any) {
     this.getDocs(this.selectedCompany);
   }
@@ -186,14 +189,14 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         this.company_list = result;
-        this.selectedCompany = this.company_list[0].orgnr; 
+        this.selectedCompany = this.company_list[0].orgnr;
         this.getDocs(this.selectedCompany);
       });
   }
 
   save(): void {
     if (!this.changed) return;
-    if (!this.the_doc.companyId || this.the_doc.companyId.length!==9)
+    if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {
