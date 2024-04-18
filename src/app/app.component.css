@@ -1,4 +1,6 @@
-
+button {
+    height: 25px;
+}
 
 table {
     border-style: solid;
@@ -23,12 +25,15 @@ tr:nth-child(odd) {
 
 .marked-td {
     background-color: rgb(229, 244, 216);
+    border-style: solid;
+    border-width: 1.5px;
+    border-color: rgb(63, 139, 114);
 }
 
 td, input ,li {
     font-size: 18px;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Sans Unicode';
-    width: 300px;
+    width: fit-content;
     border-radius: 6px;
 }
 .slim_input {
@@ -46,7 +51,6 @@ td, input ,li {
 li {
     width:fit-content;
     padding: 4px;
-
 }
 
 td {
@@ -59,8 +63,17 @@ td {
 }
 
 input {
-    background-color: rgb(254, 254, 188);
+    background-color: rgb(251, 251, 212);
     min-height: 99%;
+}
+.comp_input {
+    height: 22px;
+    width: 200px
+}
+
+.org_input {
+    height: 22px;
+    width: 90px
 }
 
 .chosen {

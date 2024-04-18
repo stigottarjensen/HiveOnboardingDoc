@@ -34,6 +34,8 @@ export class AppComponent implements OnInit {
   domainIndex = 0;
   treeMenu!: Map<string, Map<string, any[]>>;
   chosenItem: string = '';
+  new_company: string = '';
+  new_orgnr: string = '';
 
   chosen(root: string, domain: string, service: string): boolean {
     return this.chosenItem === root + '_' + domain + '_' + service;
@@ -165,7 +167,7 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         this.doc_list = result;
-        if (this.doc_list.length<1) {
+        if (this.doc_list.length < 1) {
           this.doc_list.push(JSON.parse(JSON.stringify(doc_template)));
           this.doc_list[0].companyId = compId;
         }
@@ -198,6 +200,8 @@ export class AppComponent implements OnInit {
     if (!this.changed) return;
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
+    console.log(this.the_doc);
+
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {
         headers: this.httpHeaders,
@@ -211,6 +215,25 @@ export class AppComponent implements OnInit {
       });
   }
 
+  saveCompany() {
+    if (this.new_company.trim() === '' && this.new_orgnr.trim().length !== 9)
+      return;
+
+    const body = { orgNr: this.new_orgnr, companyName: this.new_company };
+    this.http
+      .post(this.host + this.webApp + this.getRandomUrl(), body, {
+        headers: this.httpHeaders,
+        responseType: 'text',
+        observe: 'body',
+        withCredentials: false,
+      })
+      .subscribe((result: any) => {
+        this.getCompanies();
+        this.new_company = '';
+        this.new_orgnr = '';
+      });
+  }
+
   getRandomUrl(): string {
     let s = '/';
     for (let i = 0; i < 17; i++) {
@@ -219,38 +242,14 @@ export class AppComponent implements OnInit {
     }
     return '';
   }
+
+  saveJSON2File(): void {
+    const link = document.createElement('a');
+    const file = new Blob([this.the_doc_text], { type: 'text/plain' });
+    link.href = URL.createObjectURL(file);
+    link.download = 'hive_onboarding.json'; 
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
 }
 
-// doc_template = {
-//   hive_root_domain:"zzz.com",
-//   user_name:"user",
-//   password:"pass",
-//   sub_domain:"sub",
-//   contact_root:"qaz",
-//   contact_service:"wsx",
-//   service_name:"service",
-//   service_description:"jada",
-//   namespace:"sub.zzz.com/service",
-//   connection_type:"driver",
-//   number_of_allocated_ghost:10,
-//   data_schema: {},
-//   command_schema: {},
-//   pre_inline_script:"no",
-//   post_inline_script:"no",
-//   access_token:"Keycloack",
-//   is_active:true,
-//   keycloack_url: ""
-// };
-
-// rootDomain:'norhive.com',
-// domainUrl: 'https://faciliate.nornirhive.com',
-// hostUrl: 'faciliate.nornirhive.com:443',
-// websocketUrl: 'wss://faciliate.nornirhive.com/ws-c',
-// serviceUrl: 'https://faciliate.nornirhive.com/swg2',
-// authToken: 'lk34jroi2jdvllASLDKJF2sfSDFH2jloijr2o3ndf',
-// userName: 'faciliate@synxdns.com',
-// domainName: 'faciliate',
-// domain: 'faciliate',
-// serviceName: 'swg2',
-// password: 'passwordFaciliate24',
-// feature: 'd',
