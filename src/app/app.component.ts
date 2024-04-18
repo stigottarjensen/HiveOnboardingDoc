@@ -127,8 +127,6 @@ export class AppComponent implements OnInit {
         snList.push(element.serviceName);
       }
     });
-    console.log(M);
-
     return M;
   }
 
@@ -200,7 +198,6 @@ export class AppComponent implements OnInit {
     if (!this.changed) return;
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
-    console.log(this.the_doc);
 
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {

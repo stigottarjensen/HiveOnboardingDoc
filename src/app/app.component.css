@@ -2,6 +2,21 @@ button {
     height: 25px;
 }
 
+ul li {
+    border-style: solid;
+    border-width: 2px;
+    border-bottom-width: 2px;
+    border-color: rgb(93, 91, 239);
+}
+
+ul li ul li {
+    border-color: rgb(188, 133, 238);
+}
+
+ul li ul li ul li {
+    border-color: rgb(244, 199, 75);
+}
+
 table {
     border-style: solid;
     border-width: 1px;
@@ -77,9 +92,8 @@ input {
 }
 
 .chosen {
-    border-color: rgb(145, 23, 46)!;
-    border-width: 2px;
-    border-style: solid;
+    background-color: rgb(80, 77, 77);
+    color: white;
     font-weight: 500;
     font-family: 'Comic sans';
 }
