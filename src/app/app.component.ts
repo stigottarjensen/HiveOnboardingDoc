@@ -29,14 +29,10 @@ export class AppComponent implements OnInit {
   }
 
   login:any = {
-    user:'',
-    password:'',
+    email:'stigottar@gmail.com',
+    pass:'filip213',
     code:''
   };
-
-  doLogin():void {
-    if (!this.login.code || )
-  }
 
   the_doc: any = {};
   the_doc_text: string = '';
@@ -143,7 +139,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getCompanies();
+    this.doLogin();
   }
 
   changed = false;
@@ -162,7 +158,43 @@ export class AppComponent implements OnInit {
   host = 'http://localhost:8778';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
   webAppComp = '/HiveOnboardingDoc/GetCompanies';
+  loginApp = '/HiveOnboardingDoc/login';
   result: string = '';
+
+  doLogin():void {
+    if (!this.login.code || !this.login.email || !this.login.pass)
+      return;
+    if (this.login.code.length!==6)
+      return;
+    if (this.login.pass.length<8)
+      return;
+    if (this.login.email.length<7)
+      return;
+    this.http
+    .post(this.host + this.loginApp + this.getRandomUrl(), this.login, {
+      headers: this.httpHeaders,
+      responseType: 'json',
+      observe: 'body',
+      withCredentials: true,
+    })
+    .subscribe((result: any) => {
+      console.log(result);
+      this.loggedIn = true;
+      this.getCompanies();
+      this.changed = false;
+    });
+  }
+
+  timeOutHandle: any;
+  session_timeout_ms = 600*1000;
+
+  sessionTimeout(): void {
+    if (this.timeOutHandle) clearTimeout(this.timeOutHandle);
+    this.timeOutHandle = setTimeout(
+      () => (this.loggedIn = false),
+      this.session_timeout_ms
+    );
+  }
 
   getDocs(compId?: string): void {
     const urlen =
@@ -200,6 +232,8 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
+        console.log(result);
+        
         this.company_list = result;
         this.selectedCompany = this.company_list[0].orgnr;
         this.getDocs(this.selectedCompany);

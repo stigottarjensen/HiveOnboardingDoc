@@ -1,13 +1,13 @@
 <h2>Nornir </h2>
 <table *ngIf="!loggedIn">
   <tr>
-    <td class="marked-td">Brukernavn</td>
-    <td class="marked-td"><input [(ngModel)]="login.user" (blur)="doLogin()" />
+    <td class="marked-td">Epost</td>
+    <td class="marked-td"><input [(ngModel)]="login.email" (blur)="doLogin()" />
     </td>
   </tr>
   <tr>
     <td class="marked-td">Passord</td>
-    <td class="marked-td"><input [(ngModel)]="login.password" (blur)="doLogin()" />
+    <td class="marked-td"><input [(ngModel)]="login.pass" (blur)="doLogin()" />
     </td>
   </tr>
   <tr>
