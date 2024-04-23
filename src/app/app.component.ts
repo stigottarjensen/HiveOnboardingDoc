@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { doc_template } from './app.constants';
+import { catchError } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,11 @@ export class AppComponent implements OnInit {
     doc.cmdxml = this.makeXml('cmd', doc.KommandoSkjema);
   }
 
+  login:any = {
+    user:'',
+    password:'',
+    code:''
+  };
   the_doc: any = {};
   the_doc_text: string = '';
   doc_keys: any[] = [];
@@ -161,7 +167,7 @@ export class AppComponent implements OnInit {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
-        withCredentials: false,
+        withCredentials: true,
       })
       .subscribe((result: any) => {
         this.doc_list = result;
@@ -185,7 +191,7 @@ export class AppComponent implements OnInit {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
-        withCredentials: false,
+        withCredentials: true,
       })
       .subscribe((result: any) => {
         this.company_list = result;
@@ -204,7 +210,7 @@ export class AppComponent implements OnInit {
         headers: this.httpHeaders,
         responseType: 'text',
         observe: 'body',
-        withCredentials: false,
+        withCredentials: true,
       })
       .subscribe((result: any) => {
         this.getDocs(this.selectedCompany);
@@ -212,22 +218,53 @@ export class AppComponent implements OnInit {
       });
   }
 
+  brregUrl = 'https://data.brreg.no/enhetsregisteret/api/enheter/';
+
+  new_info_json:any={};
+
+  orgNrChange(): void {
+    if (this.new_orgnr.length === 9) {
+      this.http
+        .get(this.brregUrl + this.new_orgnr, {
+          headers: this.httpHeaders,
+          responseType: 'json',
+          observe: 'body',
+          withCredentials: false
+        }).pipe(
+          catchError((err)=> this.new_company='!!Feil!!')
+        )
+        .subscribe((result: any) => {
+          console.log(result);
+          if (result.navn)
+            this.new_company = result.navn;
+          this.new_info_json = result;
+        });
+    } else {
+      this.new_company='';
+    }
+  }
+
   saveCompany() {
-    if (this.new_company.trim() === '' && this.new_orgnr.trim().length !== 9)
+    if (this.new_company.trim() === '!!Feil!!' || this.new_company.trim() === '' || this.new_orgnr.trim().length !== 9)
       return;
 
-    const body = { orgNr: this.new_orgnr, companyName: this.new_company };
+    const body = { orgNr: this.new_orgnr, 
+      companyName: this.new_company, infoJSON: this.new_info_json};
+      console.log(body);
+      
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), body, {
         headers: this.httpHeaders,
         responseType: 'text',
         observe: 'body',
-        withCredentials: false,
+        withCredentials: true,
       })
       .subscribe((result: any) => {
+        console.log(result);
         this.getCompanies();
         this.new_company = '';
         this.new_orgnr = '';
+        this.new_info_json={};
       });
   }
 
@@ -244,9 +281,8 @@ export class AppComponent implements OnInit {
     const link = document.createElement('a');
     const file = new Blob([this.the_doc_text], { type: 'text/plain' });
     link.href = URL.createObjectURL(file);
-    link.download = 'hive_onboarding.json'; 
+    link.download = 'hive_onboarding.json';
     link.click();
     URL.revokeObjectURL(link.href);
   }
 }
-

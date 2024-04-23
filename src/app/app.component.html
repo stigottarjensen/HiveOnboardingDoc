@@ -1,11 +1,33 @@
 <h2>Nornir </h2>
-<div class="container">
-<select [(ngModel)]="selectedCompany" (change)="onCompChange($event)">
-  <option *ngFor="let comp of company_list;" [value]="comp.orgnr" [selected]="comp.orgnr===selectedCompany">{{comp.name}}</option>
-</select>&nbsp;
-<span>Nytt kompani: Navn&nbsp;</span><input [(ngModel)]="new_company" class="comp_input">&nbsp;
-<span>OrgNr&nbsp;</span><input [(ngModel)]="new_orgnr" class="org_input" maxlength="9">&nbsp;
-<button (click)="saveCompany()" [ngClass]="{'active':new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
+<table>
+  <tr>
+    <td class="marked-td">Brukernavn</td>
+    <td class="marked-td"><input [(ngModel)]="login.user" (change)="input_changed($event)" />
+    </td>
+  </tr>
+  <tr>
+    <td class="marked-td">Passord</td>
+    <td class="marked-td"><input [(ngModel)]="login.password" (change)="input_changed($event)" />
+    </td>
+  </tr>
+  <tr>
+    <td class="marked-td">Kode</td>
+    <td class="marked-td"><input [(ngModel)]="login.code" (change)="input_changed($event)" />
+    </td>
+  </tr>
+</table>
+
+<div class="top_container">
+  <select [(ngModel)]="selectedCompany" (change)="onCompChange($event)">
+    <option *ngFor="let comp of company_list;" [value]="comp.orgnr" [selected]="comp.orgnr===selectedCompany">
+      {{comp.name}}</option>
+  </select>&nbsp;
+
+  <span>Nytt firma: OrgNr&nbsp;</span><input [(ngModel)]="new_orgnr" class="org_input" maxlength="9"
+    (keyup)="orgNrChange()">&nbsp;
+  <span>&nbsp;Navn&nbsp;<span>{{new_company}}</span>&nbsp;</span>
+  <button (click)="saveCompany()"
+    [ngClass]="{'active':new_company.trim()!=='!!Feil!!' && new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
 </div>
 
 <div class="container">
@@ -15,8 +37,9 @@
         <ul>
           <li *ngFor="let domain of root.value | keyvalue;">&nbsp;{{domain.key}}
             <ul>
-              <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)"
-                [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">&nbsp;{{service}}</li>
+              <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)">
+                <span [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">&nbsp;{{service}}&nbsp;</span>
+              </li>
             </ul>
           </li>
         </ul>
@@ -50,7 +73,7 @@
       <td colspan="2"><input [(ngModel)]="the_doc.password" (change)="input_changed($event)" />
       </td>
     </tr>
-    
+
     <tr>
       <td colspan="2">Domene url</td>
       <td colspan="2"><span>{{the_doc['domainUrl']}}</span>
@@ -91,50 +114,52 @@
     </tr>
     <tr>
       <td>Send ghost</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.sendGhost" (change)="input_changed($event)" type="number" class="num_input"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.sendGhost" (change)="input_changed($event)" type="number"
+          class="num_input" />
       </td>
       <td>Receive ghost</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.receiveGhost" (change)="input_changed($event)" type="number" class="num_input"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.receiveGhost" (change)="input_changed($event)" type="number"
+          class="num_input" />
       </td>
     </tr>
     <tr>
       <td>Object id</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.objectID" (change)="input_changed($event)" class="slim_input"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.objectID" (change)="input_changed($event)" class="slim_input" />
       </td>
       <td>Quantity</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.quantity" (change)="input_changed($event)" class="slim_input"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.quantity" (change)="input_changed($event)" class="slim_input" />
       </td>
     </tr>
     <tr>
       <td>Web js</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.webjs" (change)="input_changed($event)"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.webjs" (change)="input_changed($event)" />
       </td>
       <td>Time Channel Req</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.timeForChannelRequest" (change)="input_changed($event)"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.timeForChannelRequest" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
       <td>Desc</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.desc" (change)="input_changed($event)"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.desc" (change)="input_changed($event)" />
       </td>
       <td>Search term</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.searchTerms" (change)="input_changed($event)"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.searchTerms" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
       <td>MasterScript</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.masterScript" (change)="input_changed($event)"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.masterScript" (change)="input_changed($event)" />
       </td>
       <td>PreMasterScript</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (change)="input_changed($event)"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (change)="input_changed($event)" />
       </td>
     </tr>
     <tr>
       <td>Feature</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.feature" (change)="input_changed($event)"/>
+      <td class="num_td"><input [(ngModel)]="the_doc.feature" (change)="input_changed($event)" />
       </td>
       <td colspan="2">&nbsp;</td>
-      
+
     </tr>
   </table>
 </div>
