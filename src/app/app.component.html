@@ -1,23 +1,23 @@
 <h2>Nornir </h2>
-<table>
+<table *ngIf="!loggedIn">
   <tr>
     <td class="marked-td">Brukernavn</td>
-    <td class="marked-td"><input [(ngModel)]="login.user" (change)="input_changed($event)" />
+    <td class="marked-td"><input [(ngModel)]="login.user" (blur)="doLogin()" />
     </td>
   </tr>
   <tr>
     <td class="marked-td">Passord</td>
-    <td class="marked-td"><input [(ngModel)]="login.password" (change)="input_changed($event)" />
+    <td class="marked-td"><input [(ngModel)]="login.password" (blur)="doLogin()" />
     </td>
   </tr>
   <tr>
     <td class="marked-td">Kode</td>
-    <td class="marked-td"><input [(ngModel)]="login.code" (change)="input_changed($event)" />
+    <td class="marked-td"><input [(ngModel)]="login.code" (blur)="doLogin()" />
     </td>
   </tr>
 </table>
 
-<div class="top_container">
+<div *ngIf="loggedIn" class="top_container">
   <select [(ngModel)]="selectedCompany" (change)="onCompChange($event)">
     <option *ngFor="let comp of company_list;" [value]="comp.orgnr" [selected]="comp.orgnr===selectedCompany">
       {{comp.name}}</option>
@@ -30,7 +30,7 @@
     [ngClass]="{'active':new_company.trim()!=='!!Feil!!' && new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
 </div>
 
-<div class="container">
+<div *ngIf="loggedIn" class="container">
   <div class="sidemenu">
     <ul>
       <li *ngFor="let root of treeMenu | keyvalue;">&nbsp;{{root.key}}
@@ -163,7 +163,7 @@
     </tr>
   </table>
 </div>
-<div class="bdiv">
+<div *ngIf="loggedIn" class="bdiv">
   <button (click)="save()" [ngClass]="{'active':changed}">Lagre</button>&nbsp;
   <button (click)="copyContent()">Kopier json</button>&nbsp;
   <button (click)="saveJSON2File()">Lagre json fil</button>

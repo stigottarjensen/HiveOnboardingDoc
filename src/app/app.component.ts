@@ -10,6 +10,7 @@ import { catchError } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   title = 'HiveOnboardingDoc';
+  loggedIn:boolean = false;
 
   constructor(private http: HttpClient) {}
 
@@ -32,6 +33,11 @@ export class AppComponent implements OnInit {
     password:'',
     code:''
   };
+
+  doLogin():void {
+    if (!this.login.code || )
+  }
+
   the_doc: any = {};
   the_doc_text: string = '';
   doc_keys: any[] = [];
