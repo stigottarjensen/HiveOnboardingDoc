@@ -20,6 +20,9 @@ export class AppComponent implements OnInit {
 
   userMenuVisible = false;
 
+  urlImgPrefix = 'data:image/png;base64,';
+  urlImg = '';
+
   new_user = {
     name:'',
     email:'',
@@ -53,7 +56,7 @@ export class AppComponent implements OnInit {
     })
     .subscribe((result: any) => {
       console.log(result);
-      
+      this.urlImg = this.urlImgPrefix + result;
       this.new_user.qrcode = result;
     });
   }
@@ -358,5 +361,15 @@ export class AppComponent implements OnInit {
     link.download = 'hive_onboarding.json';
     link.click();
     URL.revokeObjectURL(link.href);
+  }
+
+  saveQRCode(): void {
+    const link = document.createElement('a');
+    document.body.appendChild(link);
+    link.setAttribute("download", "image");
+    link.href =this.urlImg;
+    link.download = 'hive_onboarding_user.png';
+    link.click();
+    link.remove();
   }
 }

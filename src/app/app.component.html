@@ -19,7 +19,7 @@
     <td><button (click)="saveUser()">Lagre</button></td><td>&nbsp;</td>
   </tr>
 </table>
-<img [src]="new_user.qrcode">
+<img [src]="urlImg" *ngIf="userMenuVisible && urlImg.length>2" (click)="saveQRCode()">
 <div *ngIf="!userMenuVisible">
 <table *ngIf="!loggedIn">
   <tr>
