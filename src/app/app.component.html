@@ -1,194 +1,203 @@
-<h2 (click)="showUserMenu($event)">Nornir </h2>
-<table *ngIf="userMenuVisible">
-  <tr>
-    <td class="marked-td">Epost</td>
-    <td class="marked-td"><input [(ngModel)]="new_user.email" />
-    </td>
-  </tr>
-  <tr>
-    <td class="marked-td">Navn</td>
-    <td class="marked-td"><input [(ngModel)]="new_user.name" />
-    </td>
-  </tr>
-  <tr>
-    <td class="marked-td">Passord</td>
-    <td class="marked-td"><input [(ngModel)]="new_user.pass" />
-    </td>
-  </tr>
-  <tr>
-    <td><button (click)="saveUser()">Lagre</button></td><td>&nbsp;</td>
-  </tr>
-</table>
-<img [src]="urlImg" *ngIf="userMenuVisible && urlImg.length>2" (click)="saveQRCode()">
-<div *ngIf="!userMenuVisible">
-<table *ngIf="!loggedIn">
-  <tr>
-    <td class="marked-td">Epost</td>
-    <td class="marked-td"><input [(ngModel)]="login.email" (blur)="doLogin()" />
-    </td>
-  </tr>
-  <tr>
-    <td class="marked-td">Passord</td>
-    <td class="marked-td"><input [(ngModel)]="login.pass" (blur)="doLogin()" />
-    </td>
-  </tr>
-  <tr>
-    <td class="marked-td">Kode</td>
-    <td class="marked-td"><input [(ngModel)]="login.code" (blur)="doLogin()" />
-    </td>
-  </tr>
-</table>
+<div [ngClass]="{'body-div': klikket}">
+  <h2 (click)="showUserMenu($event)">Nornir </h2>
+  <table *ngIf="userMenuVisible">
+    <tr>
+      <td class="marked-td">Epost</td>
+      <td class="marked-td"><input [(ngModel)]="new_user.email" />
+      </td>
+    </tr>
+    <tr>
+      <td class="marked-td">Navn</td>
+      <td class="marked-td"><input [(ngModel)]="new_user.name" />
+      </td>
+    </tr>
+    <tr>
+      <td class="marked-td">Passord</td>
+      <td class="marked-td"><input [(ngModel)]="new_user.pass" />
+      </td>
+    </tr>
+    <tr>
+      <td><button (click)="saveUser()">Lagre</button></td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+  <img [src]="urlImg" *ngIf="userMenuVisible && urlImg.length>2" (click)="saveQRCode()">
+  <div *ngIf="!userMenuVisible">
+    <table *ngIf="!loggedIn">
+      <tr>
+        <td class="marked-td">Epost</td>
+        <td class="marked-td"><input [(ngModel)]="login.email" />
+        </td>
+      </tr>
+      <tr>
+        <td class="marked-td">Passord</td>
+        <td class="marked-td"><input [(ngModel)]="login.pass" />
+        </td>
+      </tr>
+      <tr>
+        <td class="marked-td">Kode</td>
+        <td class="marked-td"><input [(ngModel)]="login.code" />
+        </td>
+      </tr>
+      <tr>
+        <td><button (click)="doLogin()">Lagre</button></td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
 
-<div *ngIf="loggedIn" class="top_container">
-  <select [(ngModel)]="selectedCompany" (change)="onCompChange($event)">
-    <option *ngFor="let comp of company_list;" [value]="comp.orgnr" [selected]="comp.orgnr===selectedCompany">
-      {{comp.name}}</option>
-  </select>&nbsp;
+    <div *ngIf="loggedIn" class="top_container">
+      <select [(ngModel)]="selectedCompany" (change)="onCompChange($event)">
+        <option *ngFor="let comp of company_list;" [value]="comp.orgnr" [selected]="comp.orgnr===selectedCompany">
+          {{comp.name}}</option>
+      </select>&nbsp;
 
-  <span>Nytt firma: OrgNr&nbsp;</span><input [(ngModel)]="new_orgnr" class="org_input" maxlength="9"
-    (keyup)="orgNrChange()">&nbsp;
-  <span>&nbsp;Navn&nbsp;<span>{{new_company}}</span>&nbsp;</span>
-  <button (click)="saveCompany()"
-    [ngClass]="{'active':new_company.trim()!=='!!Feil!!' && new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
-</div>
+      <span>Nytt firma: OrgNr&nbsp;</span><input [(ngModel)]="new_orgnr" class="org_input" maxlength="9"
+        (keyup)="orgNrChange()">&nbsp;
+      <span>&nbsp;Navn&nbsp;<span>{{new_company}}</span>&nbsp;</span>
+      <button (click)="saveCompany()"
+        [ngClass]="{'active':new_company.trim()!=='!!Feil!!' && new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
+    </div>
 
-<div *ngIf="loggedIn" class="container">
-  <div class="sidemenu">
-    <ul>
-      <li *ngFor="let root of treeMenu | keyvalue;">&nbsp;{{root.key}}
+    <div *ngIf="loggedIn" class="container">
+      <div class="sidemenu">
         <ul>
-          <li *ngFor="let domain of root.value | keyvalue;">&nbsp;{{domain.key}}
+          <li *ngFor="let root of treeMenu | keyvalue;">&nbsp;{{root.key}}
             <ul>
-              <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)">
-                <span [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">&nbsp;{{service}}&nbsp;</span>
+              <li *ngFor="let domain of root.value | keyvalue;">&nbsp;{{domain.key}}
+                <ul>
+                  <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)">
+                    <span [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">&nbsp;{{service}}&nbsp;</span>
+                  </li>
+                </ul>
               </li>
             </ul>
           </li>
         </ul>
-      </li>
-    </ul>
-    <div class="bottom">&nbsp;</div>
+        <div class="bottom">&nbsp;</div>
+      </div>
+      <table>
+        <tr>
+          <td colspan="2" class="marked-td">HIVE ROOT Domain</td>
+          <td colspan="2" class="marked-td"><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="marked-td">Domene navn</td>
+          <td colspan="2" class="marked-td"><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" class="marked-td">Servis navn</td>
+          <td colspan="2" class="marked-td"><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">Brukernavn</td>
+          <td colspan="2"><input [(ngModel)]="the_doc.userName" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">Passord</td>
+          <td colspan="2"><input [(ngModel)]="the_doc.password" (change)="input_changed($event)" />
+          </td>
+        </tr>
+
+        <tr>
+          <td colspan="2">Domene url</td>
+          <td colspan="2"><span>{{the_doc['domainUrl']}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">Host url</td>
+          <td colspan="2"><span>{{the_doc['hostUrl']}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">Servis url</td>
+          <td colspan="2"><span>{{the_doc['serviceUrl']}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">Websocket url</td>
+          <td colspan="2"><span>{{the_doc['websocketUrl']}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">Data skjema</td>
+          <td colspan="2"><input [(ngModel)]="the_doc.DataSkjema" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4"><span>{{the_doc['xml']}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">Kommando skjema</td>
+          <td colspan="2"><input [(ngModel)]="the_doc.KommandoSkjema" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td colspan="4"><span>{{the_doc['cmdxml']}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Send ghost</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.sendGhost" (change)="input_changed($event)" type="number"
+              class="num_input" />
+          </td>
+          <td>Receive ghost</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.receiveGhost" (change)="input_changed($event)" type="number"
+              class="num_input" />
+          </td>
+        </tr>
+        <tr>
+          <td>Object id</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.objectID" (change)="input_changed($event)"
+              class="slim_input" />
+          </td>
+          <td>Quantity</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.quantity" (change)="input_changed($event)"
+              class="slim_input" />
+          </td>
+        </tr>
+        <tr>
+          <td>Web js</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.webjs" (change)="input_changed($event)" />
+          </td>
+          <td>Time Channel Req</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.timeForChannelRequest" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td>Desc</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.desc" (change)="input_changed($event)" />
+          </td>
+          <td>Search term</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.searchTerms" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td>MasterScript</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.masterScript" (change)="input_changed($event)" />
+          </td>
+          <td>PreMasterScript</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (change)="input_changed($event)" />
+          </td>
+        </tr>
+        <tr>
+          <td>Feature</td>
+          <td class="num_td"><input [(ngModel)]="the_doc.feature" (change)="input_changed($event)" />
+          </td>
+          <td colspan="2">&nbsp;</td>
+
+        </tr>
+      </table>
+    </div>
+    <div *ngIf="loggedIn" class="bdiv">
+      <button (click)="save()" [ngClass]="{'active':changed}">Lagre</button>&nbsp;
+      <button (click)="copyContent()">Kopier json</button>&nbsp;
+      <button (click)="saveJSON2File()">Lagre json fil</button>
+      <pre class="json-text">{{the_doc_text}}</pre>
+    </div>
   </div>
-  <table>
-    <tr>
-      <td colspan="2" class="marked-td">HIVE ROOT Domain</td>
-      <td colspan="2" class="marked-td"><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" class="marked-td">Domene navn</td>
-      <td colspan="2" class="marked-td"><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" class="marked-td">Servis navn</td>
-      <td colspan="2" class="marked-td"><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">Brukernavn</td>
-      <td colspan="2"><input [(ngModel)]="the_doc.userName" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">Passord</td>
-      <td colspan="2"><input [(ngModel)]="the_doc.password" (change)="input_changed($event)" />
-      </td>
-    </tr>
-
-    <tr>
-      <td colspan="2">Domene url</td>
-      <td colspan="2"><span>{{the_doc['domainUrl']}}</span>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">Host url</td>
-      <td colspan="2"><span>{{the_doc['hostUrl']}}</span>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">Servis url</td>
-      <td colspan="2"><span>{{the_doc['serviceUrl']}}</span>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">Websocket url</td>
-      <td colspan="2"><span>{{the_doc['websocketUrl']}}</span>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">Data skjema</td>
-      <td colspan="2"><input [(ngModel)]="the_doc.DataSkjema" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="4"><span>{{the_doc['xml']}}</span>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">Kommando skjema</td>
-      <td colspan="2"><input [(ngModel)]="the_doc.KommandoSkjema" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td colspan="4"><span>{{the_doc['cmdxml']}}</span>
-      </td>
-    </tr>
-    <tr>
-      <td>Send ghost</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.sendGhost" (change)="input_changed($event)" type="number"
-          class="num_input" />
-      </td>
-      <td>Receive ghost</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.receiveGhost" (change)="input_changed($event)" type="number"
-          class="num_input" />
-      </td>
-    </tr>
-    <tr>
-      <td>Object id</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.objectID" (change)="input_changed($event)" class="slim_input" />
-      </td>
-      <td>Quantity</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.quantity" (change)="input_changed($event)" class="slim_input" />
-      </td>
-    </tr>
-    <tr>
-      <td>Web js</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.webjs" (change)="input_changed($event)" />
-      </td>
-      <td>Time Channel Req</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.timeForChannelRequest" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td>Desc</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.desc" (change)="input_changed($event)" />
-      </td>
-      <td>Search term</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.searchTerms" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td>MasterScript</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.masterScript" (change)="input_changed($event)" />
-      </td>
-      <td>PreMasterScript</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (change)="input_changed($event)" />
-      </td>
-    </tr>
-    <tr>
-      <td>Feature</td>
-      <td class="num_td"><input [(ngModel)]="the_doc.feature" (change)="input_changed($event)" />
-      </td>
-      <td colspan="2">&nbsp;</td>
-
-    </tr>
-  </table>
-</div>
-<div *ngIf="loggedIn" class="bdiv">
-  <button (click)="save()" [ngClass]="{'active':changed}">Lagre</button>&nbsp;
-  <button (click)="copyContent()">Kopier json</button>&nbsp;
-  <button (click)="saveJSON2File()">Lagre json fil</button>
-  <pre class="json-text">{{the_doc_text}}</pre>
-</div>
 </div>

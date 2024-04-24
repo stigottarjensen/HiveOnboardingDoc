@@ -10,7 +10,7 @@ import { catchError } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   title = 'HiveOnboardingDoc';
-  loggedIn:boolean = false;
+  loggedIn: boolean = false;
 
   constructor(private http: HttpClient) {}
 
@@ -22,12 +22,13 @@ export class AppComponent implements OnInit {
 
   urlImgPrefix = 'data:image/png;base64,';
   urlImg = '';
+  klikket = false;
 
   new_user = {
-    name:'',
-    email:'',
-    pass:'',
-    qrcode:''
+    name: '',
+    email: '',
+    pass: '',
+    qrcode: '',
   };
 
   host = 'http://localhost:8778';
@@ -37,28 +38,30 @@ export class AppComponent implements OnInit {
   newUserApp = '/HiveOnboardingDoc/newuser';
   result: string = '';
 
-  showUserMenu(event: { shiftKey: any; }) {
-    if (event.shiftKey){
-      this.userMenuVisible=!this.userMenuVisible
+  showUserMenu(event: { shiftKey: any }) {
+    if (event.shiftKey) {
+      this.userMenuVisible = !this.userMenuVisible;
     }
   }
 
-  saveUser():void {
-    if (this.new_user.pass.length<8) return;
-    if (this.new_user.name.length<4) return;
-    if (this.new_user.email.length<7) return;
+  saveUser(): void {
+    if (this.new_user.pass.length < 8) return;
+    if (this.new_user.name.length < 4) return;
+    if (this.new_user.email.length < 7) return;
+    this.klikket = true;
     this.http
-    .post(this.host + this.newUserApp + this.getRandomUrl(), this.new_user, {
-      headers: this.httpHeaders,
-      responseType: 'text',
-      observe: 'body',
-      withCredentials: true,
-    })
-    .subscribe((result: any) => {
-      console.log(result);
-      this.urlImg = this.urlImgPrefix + result;
-      this.new_user.qrcode = result;
-    });
+      .post(this.host + this.newUserApp + this.getRandomUrl(), this.new_user, {
+        headers: this.httpHeaders,
+        responseType: 'text',
+        observe: 'body',
+        withCredentials: true,
+      })
+      .subscribe((result: any) => {
+        console.log(result);
+        this.urlImg = this.urlImgPrefix + result;
+        this.new_user.qrcode = result;
+        this.klikket = false;
+      });
   }
 
   makeUrls(doc: any): void {
@@ -71,10 +74,10 @@ export class AppComponent implements OnInit {
     doc.cmdxml = this.makeXml('cmd', doc.KommandoSkjema);
   }
 
-  login:any = {
-    email:'stigottar@gmail.com',
-    pass:'filip213',
-    code:''
+  login: any = {
+    email: 'stigottar@gmail.com',
+    pass: 'filip213',
+    code: '',
   };
 
   the_doc: any = {};
@@ -198,32 +201,32 @@ export class AppComponent implements OnInit {
     );
   }
 
-  doLogin():void {
-    if (!this.login.code || !this.login.email || !this.login.pass)
-      return;
-    if (this.login.code.length!==6)
-      return;
-    if (this.login.pass.length<8)
-      return;
-    if (this.login.email.length<7)
-      return;
+  doLogin(): void {
+    if (!this.login.code || !this.login.email || !this.login.pass) return;
+    if (this.login.code.length !== 6) return;
+    if (this.login.pass.length < 8) return;
+    if (this.login.email.length < 7) return;
+    this.klikket = true;
     this.http
-    .post(this.host + this.loginApp + this.getRandomUrl(), this.login, {
-      headers: this.httpHeaders,
-      responseType: 'json',
-      observe: 'body',
-      withCredentials: true,
-    })
-    .subscribe((result: any) => {
-      console.log(result);
-      this.loggedIn = true;
-      this.getCompanies();
-      this.changed = false;
-    });
+      .post(this.host + this.loginApp + this.getRandomUrl(), this.login, {
+        headers: this.httpHeaders,
+        responseType: 'json',
+        observe: 'body',
+        withCredentials: true,
+      })
+      .subscribe((result: any) => {
+        console.log(result);
+        if (result && result.ok === 'yes') {
+          this.loggedIn = true;
+          this.getCompanies();
+        } else this.loggedIn = false;
+        this.changed = false;
+        this.klikket = false;
+      });
   }
 
   timeOutHandle: any;
-  session_timeout_ms = 600*1000;
+  session_timeout_ms = 600 * 1000;
 
   sessionTimeout(): void {
     if (this.timeOutHandle) clearTimeout(this.timeOutHandle);
@@ -270,10 +273,12 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         console.log(result);
-        
-        this.company_list = result;
-        this.selectedCompany = this.company_list[0].orgnr;
-        this.getDocs(this.selectedCompany);
+        if (result.login) this.loggedIn = false;
+        else {
+          this.company_list = result;
+          this.selectedCompany = this.company_list[0].orgnr;
+          this.getDocs(this.selectedCompany);
+        }
       });
   }
 
@@ -281,7 +286,7 @@ export class AppComponent implements OnInit {
     if (!this.changed) return;
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
-
+    this.klikket = true;
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {
         headers: this.httpHeaders,
@@ -292,12 +297,13 @@ export class AppComponent implements OnInit {
       .subscribe((result: any) => {
         this.getDocs(this.selectedCompany);
         this.changed = false;
+        this.klikket = false;
       });
   }
 
   brregUrl = 'https://data.brreg.no/enhetsregisteret/api/enheter/';
 
-  new_info_json:any={};
+  new_info_json: any = {};
 
   orgNrChange(): void {
     if (this.new_orgnr.length === 9) {
@@ -306,29 +312,34 @@ export class AppComponent implements OnInit {
           headers: this.httpHeaders,
           responseType: 'json',
           observe: 'body',
-          withCredentials: false
-        }).pipe(
-          catchError((err)=> this.new_company='!!Feil!!')
-        )
+          withCredentials: false,
+        })
+        .pipe(catchError((err) => (this.new_company = '!!Feil!!')))
         .subscribe((result: any) => {
           console.log(result);
-          if (result.navn)
-            this.new_company = result.navn;
+          if (result.navn) this.new_company = result.navn;
           this.new_info_json = result;
         });
     } else {
-      this.new_company='';
+      this.new_company = '';
     }
   }
 
   saveCompany() {
-    if (this.new_company.trim() === '!!Feil!!' || this.new_company.trim() === '' || this.new_orgnr.trim().length !== 9)
+    if (
+      this.new_company.trim() === '!!Feil!!' ||
+      this.new_company.trim() === '' ||
+      this.new_orgnr.trim().length !== 9
+    )
       return;
 
-    const body = { orgNr: this.new_orgnr, 
-      companyName: this.new_company, infoJSON: this.new_info_json};
-      console.log(body);
-      
+    const body = {
+      orgNr: this.new_orgnr,
+      companyName: this.new_company,
+      infoJSON: this.new_info_json,
+    };
+    this.klikket = true;
+
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), body, {
         headers: this.httpHeaders,
@@ -341,7 +352,8 @@ export class AppComponent implements OnInit {
         this.getCompanies();
         this.new_company = '';
         this.new_orgnr = '';
-        this.new_info_json={};
+        this.new_info_json = {};
+        this.klikket = true;
       });
   }
 
@@ -366,8 +378,8 @@ export class AppComponent implements OnInit {
   saveQRCode(): void {
     const link = document.createElement('a');
     document.body.appendChild(link);
-    link.setAttribute("download", "image");
-    link.href =this.urlImg;
+    link.setAttribute('download', 'image');
+    link.href = this.urlImg;
     link.download = 'hive_onboarding_user.png';
     link.click();
     link.remove();
