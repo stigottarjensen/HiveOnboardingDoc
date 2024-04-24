@@ -1,4 +1,26 @@
-<h2>Nornir </h2>
+<h2 (click)="showUserMenu($event)">Nornir </h2>
+<table *ngIf="userMenuVisible">
+  <tr>
+    <td class="marked-td">Epost</td>
+    <td class="marked-td"><input [(ngModel)]="new_user.email" />
+    </td>
+  </tr>
+  <tr>
+    <td class="marked-td">Navn</td>
+    <td class="marked-td"><input [(ngModel)]="new_user.name" />
+    </td>
+  </tr>
+  <tr>
+    <td class="marked-td">Passord</td>
+    <td class="marked-td"><input [(ngModel)]="new_user.pass" />
+    </td>
+  </tr>
+  <tr>
+    <td><button (click)="saveUser()">Lagre</button></td><td>&nbsp;</td>
+  </tr>
+</table>
+<img [src]="new_user.qrcode">
+<div *ngIf="!userMenuVisible">
 <table *ngIf="!loggedIn">
   <tr>
     <td class="marked-td">Epost</td>
@@ -168,4 +190,5 @@
   <button (click)="copyContent()">Kopier json</button>&nbsp;
   <button (click)="saveJSON2File()">Lagre json fil</button>
   <pre class="json-text">{{the_doc_text}}</pre>
+</div>
 </div>

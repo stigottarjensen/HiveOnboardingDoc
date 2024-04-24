@@ -18,6 +18,46 @@ export class AppComponent implements OnInit {
     'Content-Type': 'application/json',
   });
 
+  userMenuVisible = false;
+
+  new_user = {
+    name:'',
+    email:'',
+    pass:'',
+    qrcode:''
+  };
+
+  host = 'http://localhost:8778';
+  webApp = '/HiveOnboardingDoc/GetSaveDoc';
+  webAppComp = '/HiveOnboardingDoc/GetCompanies';
+  loginApp = '/HiveOnboardingDoc/login';
+  newUserApp = '/HiveOnboardingDoc/newuser';
+  result: string = '';
+
+  showUserMenu(event: { shiftKey: any; }) {
+    if (event.shiftKey){
+      this.userMenuVisible=!this.userMenuVisible
+    }
+  }
+
+  saveUser():void {
+    if (this.new_user.pass.length<8) return;
+    if (this.new_user.name.length<4) return;
+    if (this.new_user.email.length<7) return;
+    this.http
+    .post(this.host + this.newUserApp + this.getRandomUrl(), this.new_user, {
+      headers: this.httpHeaders,
+      responseType: 'text',
+      observe: 'body',
+      withCredentials: true,
+    })
+    .subscribe((result: any) => {
+      console.log(result);
+      
+      this.new_user.qrcode = result;
+    });
+  }
+
   makeUrls(doc: any): void {
     const domain = doc.domain + '.' + doc.rootDomain;
     doc.domainUrl = 'https://' + domain;
@@ -154,12 +194,6 @@ export class AppComponent implements OnInit {
       item.includes('Url') || item.includes('xml') || item.includes('link')
     );
   }
-
-  host = 'http://localhost:8778';
-  webApp = '/HiveOnboardingDoc/GetSaveDoc';
-  webAppComp = '/HiveOnboardingDoc/GetCompanies';
-  loginApp = '/HiveOnboardingDoc/login';
-  result: string = '';
 
   doLogin():void {
     if (!this.login.code || !this.login.email || !this.login.pass)
