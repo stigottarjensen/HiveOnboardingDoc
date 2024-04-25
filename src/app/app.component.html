@@ -1,6 +1,7 @@
 <div [ngClass]="{'body-div': klikket}">
   <h2 (click)="showUserMenu($event)">Nornir </h2>
   <table *ngIf="userMenuVisible">
+    <caption>Ny bruker</caption>
     <tr>
       <td class="marked-td">Epost</td>
       <td class="marked-td"><input [(ngModel)]="new_user.email" />
@@ -13,17 +14,18 @@
     </tr>
     <tr>
       <td class="marked-td">Passord</td>
-      <td class="marked-td"><input [(ngModel)]="new_user.pass" />
+      <td class="marked-td"><input [(ngModel)]="new_user.pass" (keyup.enter)="saveUser()" />
       </td>
     </tr>
     <tr>
-      <td><button (click)="saveUser()">Lagre</button></td>
+      <td><button (click)="saveUser()">Hent QR kode</button></td>
       <td>&nbsp;</td>
     </tr>
   </table>
   <img [src]="urlImg" *ngIf="userMenuVisible && urlImg.length>2" (click)="saveQRCode()">
   <div *ngIf="!userMenuVisible">
     <table *ngIf="!loggedIn">
+      <caption>Log inn</caption>
       <tr>
         <td class="marked-td">Epost</td>
         <td class="marked-td"><input [(ngModel)]="login.email" />
@@ -36,11 +38,11 @@
       </tr>
       <tr>
         <td class="marked-td">Kode</td>
-        <td class="marked-td"><input [(ngModel)]="login.code" />
+        <td class="marked-td"><input [(ngModel)]="login.code" (keyup.enter)="doLogin()" />
         </td>
       </tr>
       <tr>
-        <td><button (click)="doLogin()">Lagre</button></td>
+        <td><button (click)="doLogin()">Log inn </button></td>
         <td>&nbsp;</td>
       </tr>
     </table>

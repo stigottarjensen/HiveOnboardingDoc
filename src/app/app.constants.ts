@@ -1,3 +1,5 @@
+// ng build --base-href=/hiveonboarding/
+
 export const doc_template = {
     companyId: '',
     rootDomain: '',

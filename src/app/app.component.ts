@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
     qrcode: '',
   };
 
-  host = 'http://localhost:8778';
+  host = '';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
   webAppComp = '/HiveOnboardingDoc/GetCompanies';
   loginApp = '/HiveOnboardingDoc/login';
@@ -75,7 +75,7 @@ export class AppComponent implements OnInit {
   }
 
   login: any = {
-    email: 'stigottar@gmail.com',
+    email: 'stig@nornir.io',
     pass: 'filip213',
     code: '',
   };
@@ -161,6 +161,7 @@ export class AppComponent implements OnInit {
       return 0;
     });
     this.treeMenu = this.makeTreeMenuList();
+    this.klikket = false;
   }
 
   makeTreeMenuList(): Map<string, Map<string, any[]>> {
@@ -207,8 +208,11 @@ export class AppComponent implements OnInit {
     if (this.login.pass.length < 8) return;
     if (this.login.email.length < 7) return;
     this.klikket = true;
+    const url = this.host + this.loginApp;
+    console.log(url);
+
     this.http
-      .post(this.host + this.loginApp + this.getRandomUrl(), this.login, {
+      .post(this.host + this.loginApp+ this.getRandomUrl(), this.login, {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
@@ -219,9 +223,11 @@ export class AppComponent implements OnInit {
         if (result && result.ok === 'yes') {
           this.loggedIn = true;
           this.getCompanies();
-        } else this.loggedIn = false;
+        } else {
+          this.loggedIn = false;
+          this.klikket = false;
+        }
         this.changed = false;
-        this.klikket = false;
       });
   }
 
@@ -239,7 +245,7 @@ export class AppComponent implements OnInit {
   getDocs(compId?: string): void {
     const urlen =
       this.host + this.webApp + this.getRandomUrl() + `?companyId=${compId}`;
-
+    this.klikket = true;
     this.http
       .get(urlen, {
         headers: this.httpHeaders,
@@ -264,6 +270,7 @@ export class AppComponent implements OnInit {
   }
 
   getCompanies(): void {
+    this.klikket = true;
     this.http
       .get(this.host + this.webAppComp + this.getRandomUrl(), {
         headers: this.httpHeaders,
@@ -307,6 +314,7 @@ export class AppComponent implements OnInit {
 
   orgNrChange(): void {
     if (this.new_orgnr.length === 9) {
+      this.klikket = true;
       this.http
         .get(this.brregUrl + this.new_orgnr, {
           headers: this.httpHeaders,
@@ -319,6 +327,7 @@ export class AppComponent implements OnInit {
           console.log(result);
           if (result.navn) this.new_company = result.navn;
           this.new_info_json = result;
+          this.klikket = false;
         });
     } else {
       this.new_company = '';
@@ -363,7 +372,7 @@ export class AppComponent implements OnInit {
       const t = Math.floor(Math.random() * 26) + 97;
       s += String.fromCharCode(t);
     }
-    return '';
+    return s;
   }
 
   saveJSON2File(): void {

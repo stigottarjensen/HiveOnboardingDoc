@@ -1,5 +1,8 @@
 .body-div {
     background-color: rgb(213, 212, 211);
+    border-width: 3px;
+    border-style: solid;
+    border-color: red;
 }
 
 button {
@@ -31,6 +34,14 @@ table {
     border-color: black;
     width: fit-content;
 }
+
+table caption {
+    font-size: 22px;
+    font-family: fantasy;
+    background-color: rgb(243, 232, 218);
+    color: darkblue;
+}
+
 select {
     margin-left: 20px;
     margin-bottom: 10px;
