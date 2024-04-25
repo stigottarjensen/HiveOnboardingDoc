@@ -212,7 +212,7 @@ export class AppComponent implements OnInit {
     console.log(url);
 
     this.http
-      .post(this.host + this.loginApp+ this.getRandomUrl(), this.login, {
+      .post(this.host + this.loginApp + this.getRandomUrl(), this.login, {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
@@ -254,6 +254,10 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
+        if (result && result[0].login && result[0].login !== 'yes') {
+          this.loggedIn = false;
+          return;
+        }
         this.doc_list = result;
         if (this.doc_list.length < 1) {
           this.doc_list.push(JSON.parse(JSON.stringify(doc_template)));
@@ -280,12 +284,14 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         console.log(result);
-        if (result.login) this.loggedIn = false;
-        else {
-          this.company_list = result;
-          this.selectedCompany = this.company_list[0].orgnr;
-          this.getDocs(this.selectedCompany);
+        if (result && result[0].login && result[0].login !== 'yes') {
+          this.loggedIn = false;
+          return;
         }
+
+        this.company_list = result;
+        this.selectedCompany = this.company_list[0].orgnr;
+        this.getDocs(this.selectedCompany);
       });
   }
 
@@ -302,6 +308,11 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
+        console.log(result);
+        if (result && result[0].login && result[0].login!=='yes') {
+          this.loggedIn=false;
+          return;
+        }
         this.getDocs(this.selectedCompany);
         this.changed = false;
         this.klikket = false;
@@ -358,6 +369,10 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         console.log(result);
+        if (result && result[0].login && result[0].login!=='yes') {
+          this.loggedIn=false;
+          return;
+        }
         this.getCompanies();
         this.new_company = '';
         this.new_orgnr = '';
