@@ -57,7 +57,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
         this.urlImg = this.urlImgPrefix + result;
         this.new_user.qrcode = result;
         this.klikket = false;
@@ -75,8 +74,8 @@ export class AppComponent implements OnInit {
   }
 
   login: any = {
-    email: 'stig@nornir.io',
-    pass: 'filip213',
+    email: '',
+    pass: '',
     code: '',
   };
 
@@ -116,7 +115,6 @@ export class AppComponent implements OnInit {
   copyContent = async () => {
     try {
       await navigator.clipboard.writeText(this.the_doc_text);
-      console.log('Content copied to clipboard');
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
@@ -167,7 +165,6 @@ export class AppComponent implements OnInit {
   makeTreeMenuList(): Map<string, Map<string, any[]>> {
     const M = new Map<string, Map<string, any[]>>();
     this.doc_list.forEach((element: any) => {
-      console.log(element.rootDomain, element.domain, element.serviceName);
 
       let m = M.get(element.rootDomain);
       if (!m) {
@@ -209,7 +206,6 @@ export class AppComponent implements OnInit {
     if (this.login.email.length < 7) return;
     this.klikket = true;
     const url = this.host + this.loginApp;
-    console.log(url);
 
     this.http
       .post(this.host + this.loginApp + this.getRandomUrl(), this.login, {
@@ -219,7 +215,7 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
+        this.login.code='';
         if (result && result.ok === 'yes') {
           this.loggedIn = true;
           this.getCompanies();
@@ -256,6 +252,7 @@ export class AppComponent implements OnInit {
       .subscribe((result: any) => {
         if (result && result[0].login && result[0].login !== 'yes') {
           this.loggedIn = false;
+          this.klikket = false;
           return;
         }
         this.doc_list = result;
@@ -283,9 +280,9 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
         if (result && result[0].login && result[0].login !== 'yes') {
           this.loggedIn = false;
+          this.klikket = false;
           return;
         }
 
@@ -308,14 +305,14 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
+        this.changed = false;
+        this.klikket = false;
         if (result && result[0].login && result[0].login!=='yes') {
           this.loggedIn=false;
           return;
         }
         this.getDocs(this.selectedCompany);
-        this.changed = false;
-        this.klikket = false;
+   
       });
   }
 
@@ -335,7 +332,6 @@ export class AppComponent implements OnInit {
         })
         .pipe(catchError((err) => (this.new_company = '!!Feil!!')))
         .subscribe((result: any) => {
-          console.log(result);
           if (result.navn) this.new_company = result.navn;
           this.new_info_json = result;
           this.klikket = false;
@@ -368,7 +364,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
         if (result && result[0].login && result[0].login!=='yes') {
           this.loggedIn=false;
           return;
