@@ -57,6 +57,8 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
+        console.log(result);
+
         this.urlImg = this.urlImgPrefix + result;
         this.new_user.qrcode = result;
         this.klikket = false;
@@ -74,11 +76,12 @@ export class AppComponent implements OnInit {
   }
 
   login: any = {
-    email: '',
-    pass: '',
+    email: 'stig@nornir.io',
+    pass: 'filip213',
     code: '',
   };
 
+  textarea_content = '';
   the_doc: any = {};
   the_doc_text: string = '';
   doc_keys: any[] = [];
@@ -165,7 +168,6 @@ export class AppComponent implements OnInit {
   makeTreeMenuList(): Map<string, Map<string, any[]>> {
     const M = new Map<string, Map<string, any[]>>();
     this.doc_list.forEach((element: any) => {
-
       let m = M.get(element.rootDomain);
       if (!m) {
         m = new Map<string, any[]>();
@@ -187,16 +189,31 @@ export class AppComponent implements OnInit {
   }
 
   changed = false;
+  editField: string | undefined;
 
   input_changed(event: any): void {
     this.makeUrls(this.the_doc);
     this.changed = true;
+    if (this.editField) {
+      this.textarea_content = this.the_doc[this.editField];
+    }
   }
 
   readonlyItems(item: string): boolean {
     return (
       item.includes('Url') || item.includes('xml') || item.includes('link')
     );
+  }
+
+  editTextArea(e: any) {
+    if (e instanceof KeyboardEvent) {
+      if (this.editField) {
+        this.the_doc[this.editField] = this.textarea_content;
+      }
+    } else {
+      this.editField = '' + e;
+      this.textarea_content = this.the_doc[this.editField];
+    }
   }
 
   doLogin(): void {
@@ -215,7 +232,9 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        this.login.code='';
+        console.log(result);
+
+        this.login.code = '';
         if (result && result.ok === 'yes') {
           this.loggedIn = true;
           this.getCompanies();
@@ -250,6 +269,8 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
+        console.log(result);
+
         if (result && result[0].login && result[0].login !== 'yes') {
           this.loggedIn = false;
           this.klikket = false;
@@ -307,12 +328,11 @@ export class AppComponent implements OnInit {
       .subscribe((result: any) => {
         this.changed = false;
         this.klikket = false;
-        if (result && result[0].login && result[0].login!=='yes') {
-          this.loggedIn=false;
+        if (result && result[0].login && result[0].login !== 'yes') {
+          this.loggedIn = false;
           return;
         }
         this.getDocs(this.selectedCompany);
-   
       });
   }
 
@@ -364,8 +384,8 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        if (result && result[0].login && result[0].login!=='yes') {
-          this.loggedIn=false;
+        if (result && result[0].login && result[0].login !== 'yes') {
+          this.loggedIn = false;
           return;
         }
         this.getCompanies();

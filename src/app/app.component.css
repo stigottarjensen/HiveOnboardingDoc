@@ -172,3 +172,20 @@ span span {
 h2 {
     margin: 20px;
 }
+
+textarea {
+    margin-left: 15px;
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(49, 200, 205);
+    font-size: 500;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: rgb(212, 254, 254);
+}
+
+.mark-row {
+    font-weight: 700;
+    color: rgb(17, 25, 175);
+    background-color: rgb(173, 127, 215);
+}
