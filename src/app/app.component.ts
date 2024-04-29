@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
     qrcode: '',
   };
 
-  host = '';
+  host = 'http://localhost:8778';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
   webAppComp = '/HiveOnboardingDoc/GetCompanies';
   loginApp = '/HiveOnboardingDoc/login';

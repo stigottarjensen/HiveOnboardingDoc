@@ -10,15 +10,15 @@ button {
 }
 
 ul li {
-   background-color: rgb(239, 235, 235);
+   background-color: rgb(228, 220, 220);
 }
 
 ul li ul li {
-    background-color: rgb(228, 220, 220);
+    background-color: rgb(239, 235, 235);
 }
 
 ul li ul li ul li {
-    background-color: rgb(239, 235, 235);
+    background-color: rgb(228, 220, 220);
     padding: 0px;
     margin: 2px;
 }
