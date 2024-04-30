@@ -76,8 +76,8 @@ export class AppComponent implements OnInit {
   }
 
   login: any = {
-    email: 'stig@nornir.io',
-    pass: 'filip213',
+    email: '',
+    pass: '',
     code: '',
   };
 
