@@ -257,8 +257,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
-
         this.login.code = '';
         if (result && result.ok === 'yes') {
           this.loggedIn = true;
