@@ -76,8 +76,8 @@ export class AppComponent implements OnInit {
   }
 
   login: any = {
-    email: '',
-    pass: '',
+    email: 'stig@nornir.io',
+    pass: 'filip213',
     code: '',
   };
 
@@ -149,6 +149,7 @@ export class AppComponent implements OnInit {
         this.doc_list[0].serviceName;
     }
     this.the_doc = this.doc_list[i];
+    this.textarea_content = this.the_doc.webjs;
     this.the_doc_text = JSON.stringify(this.the_doc, null, 4);
     this.makeUrls(this.the_doc);
     this.doc_keys = Object.keys(this.the_doc);
@@ -161,6 +162,7 @@ export class AppComponent implements OnInit {
       if (a.serviceName < b.serviceName) return -1;
       return 0;
     });
+    Object.keys(this.scriptFields).forEach((sfStr) => this.testScript(sfStr));
     this.treeMenu = this.makeTreeMenuList();
     this.klikket = false;
   }
@@ -191,12 +193,32 @@ export class AppComponent implements OnInit {
   changed = false;
   editField: string | undefined;
 
+  scriptFields: any = {
+    webjs: { error: false },
+    masterScript: { error: false },
+    preMasterScript: { error: false },
+  };
+
+  testScript(sfStr?: string | any): void {
+    if (!sfStr)
+      sfStr = '' + this.editField;
+    try {
+        const f = new Function(this.the_doc[sfStr]);
+        this.scriptError = '';
+        this.scriptFields[sfStr].error = false;
+      } catch (err: any) {
+        this.scriptError = err;
+        this.scriptFields[sfStr].error = true;
+      }
+  }
+
   input_changed(event: any): void {
     this.makeUrls(this.the_doc);
     this.changed = true;
     if (this.editField) {
       this.textarea_content = this.the_doc[this.editField];
-    }
+      this.testScript();
+    } else this.textarea_content = '';
   }
 
   readonlyItems(item: string): boolean {
@@ -204,6 +226,8 @@ export class AppComponent implements OnInit {
       item.includes('Url') || item.includes('xml') || item.includes('link')
     );
   }
+
+  scriptError: string = '';
 
   editTextArea(e: any) {
     if (e instanceof KeyboardEvent) {
@@ -214,6 +238,7 @@ export class AppComponent implements OnInit {
       this.editField = '' + e;
       this.textarea_content = this.the_doc[this.editField];
     }
+    this.testScript();
   }
 
   doLogin(): void {
@@ -271,7 +296,12 @@ export class AppComponent implements OnInit {
       .subscribe((result: any) => {
         console.log(result);
 
-        if (result && result[0].login && result[0].login !== 'yes') {
+        if (
+          result &&
+          result.length > 0 &&
+          result[0].login &&
+          result[0].login !== 'yes'
+        ) {
           this.loggedIn = false;
           this.klikket = false;
           return;
@@ -313,8 +343,19 @@ export class AppComponent implements OnInit {
       });
   }
 
+  isScriptError():boolean {
+    const sf = Object.keys(this.scriptFields);
+    let err = false;
+    for (var i=0; i<sf.length; i++) {
+      err = err || this.scriptFields[sf[i]].error;    
+    }
+    return err;
+  }
+
   save(): void {
     if (!this.changed) return;
+    if (this.isScriptError()) return;
+
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
     this.klikket = true;

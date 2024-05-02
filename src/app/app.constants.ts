@@ -12,7 +12,7 @@ export const doc_template = {
     domainName: '',
     domain: '',
     serviceName: '',
-    password: '',
+    //password: '',
     feature: '',
     active: '',
     DataSkjema: '',

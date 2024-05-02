@@ -33,7 +33,7 @@
       </tr>
       <tr>
         <td class="marked-td">Passord</td>
-        <td class="marked-td"><input [(ngModel)]="login.pass" />
+        <td class="marked-td"><input [(ngModel)]="login.pass" type="password" />
         </td>
       </tr>
       <tr>
@@ -171,7 +171,7 @@
           <td colspan="1">beskrivelse</td>
         </tr>
         <tr>
-          <td [ngClass]="{'mark-row':editField==='webjs'}">Web js</td>
+          <td [ngClass]="{'mark-row':editField==='webjs'}" [ngStyle]="{'background-color':scriptFields.webjs.error?'orange':''}">Web js</td>
           <td class="num_td"><input [(ngModel)]="the_doc.webjs" (keyup)="input_changed($event)" (focus)="editTextArea('webjs')" /></td>
           <td colspan="1">beskrivelse</td>
         </tr>
@@ -194,29 +194,30 @@
           <td colspan="1">beskrivelse</td>
         </tr>
         <tr>
-          <td [ngClass]="{'mark-row':editField==='masterScript'}">MasterScript</td>
+          <td [ngClass]="{'mark-row':editField==='masterScript'}" [ngStyle]="{'background-color':scriptFields.masterScript.error?'orange':''}">MasterScript</td>
           <td class="num_td"><input [(ngModel)]="the_doc.masterScript" (keyup)="input_changed($event)" (focus)="editTextArea('masterScript')"/>
           </td>
           <td colspan="1">beskrivelse</td>
         </tr>
         <tr >
-          <td [ngClass]="{'mark-row':editField==='preMasterScript'}">PreMasterScript</td>
+          <td [ngClass]="{'mark-row':editField==='preMasterScript'}" [ngStyle]="{'background-color':scriptFields.preMasterScript.error?'orange':''}">PreMasterScript</td>
           <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (keyup)="input_changed($event)" (focus)="editTextArea('preMasterScript')"/>
           </td>
           <td colspan="1">beskrivelse</td>
         </tr>
         <tr>
-          <td [ngClass]="{'mark-row':editField==='feature'}">Feature</td>
+          <td [ngClass]="{'mark-row':editField==='feature'}" >Feature</td>
           <td class="num_td"><input [(ngModel)]="the_doc.feature" (keyup)="input_changed($event)" (focus)="editTextArea('feature')"/>
           </td>
           <td colspan="1">beskrivelse</td>
 
         </tr>
       </table>
-      <div><textarea rows="10" cols="50" (keyup)="editTextArea($event)" [(ngModel)]="textarea_content"></textarea></div>
+      <div><textarea rows="15" cols="60" (keyup)="editTextArea($event)" [(ngModel)]="textarea_content"></textarea>
+      <p>{{scriptError}}</p></div>
     </div>
     <div *ngIf="loggedIn" class="bdiv">
-      <button (click)="save()" [ngClass]="{'active':changed}">Lagre</button>&nbsp;
+      <button (click)="save()" [ngClass]="{'active':changed}" [ngStyle]="{'background-color':isScriptError()?'orange':''}">Lagre</button>&nbsp;
       <button (click)="copyContent()">Kopier json</button>&nbsp;
       <button (click)="saveJSON2File()">Lagre json fil</button>
       <pre class="json-text">{{the_doc_text}}</pre>
