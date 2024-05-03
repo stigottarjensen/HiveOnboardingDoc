@@ -58,7 +58,7 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         console.log(result);
-
+        
         this.urlImg = this.urlImgPrefix + result;
         this.new_user.qrcode = result;
         this.klikket = false;
@@ -79,6 +79,7 @@ export class AppComponent implements OnInit {
     email: 'stig@nornir.io',
     pass: 'filip213',
     code: '',
+    sqlserver:'p'
   };
 
   textarea_content = '';
@@ -163,6 +164,7 @@ export class AppComponent implements OnInit {
       return 0;
     });
     Object.keys(this.scriptFields).forEach((sfStr) => this.testScript(sfStr));
+    this.editField = 'webjs';
     this.treeMenu = this.makeTreeMenuList();
     this.klikket = false;
   }
@@ -187,7 +189,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.doLogin();
+   // this.doLogin();
   }
 
   changed = false;
@@ -199,17 +201,19 @@ export class AppComponent implements OnInit {
     preMasterScript: { error: false },
   };
 
+  sfArr = Object.keys(this.scriptFields);
+
   testScript(sfStr?: string | any): void {
-    if (!sfStr)
-      sfStr = '' + this.editField;
+    if (!sfStr) sfStr = '' + this.editField;
+    if (!this.sfArr.includes(sfStr)) return;
     try {
-        const f = new Function(this.the_doc[sfStr]);
-        this.scriptError = '';
-        this.scriptFields[sfStr].error = false;
-      } catch (err: any) {
-        this.scriptError = err;
-        this.scriptFields[sfStr].error = true;
-      }
+      const f = new Function(this.the_doc[sfStr]);
+      this.scriptError = '';
+      this.scriptFields[sfStr].error = false;
+    } catch (err: any) {
+      this.scriptError = err;
+      this.scriptFields[sfStr].error = true;
+    }
   }
 
   input_changed(event: any): void {
@@ -233,6 +237,7 @@ export class AppComponent implements OnInit {
     if (e instanceof KeyboardEvent) {
       if (this.editField) {
         this.the_doc[this.editField] = this.textarea_content;
+        this.changed = true;
       }
     } else {
       this.editField = '' + e;
@@ -241,7 +246,11 @@ export class AppComponent implements OnInit {
     this.testScript();
   }
 
-  doLogin(): void {
+  doLogin(event:any): void {
+    console.log(event);
+    
+    //if (event.shiftKey)
+      this.login.sqlserver='p';
     if (!this.login.code || !this.login.email || !this.login.pass) return;
     if (this.login.code.length !== 6) return;
     if (this.login.pass.length < 8) return;
@@ -257,6 +266,8 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
+        console.log(result);
+        
         this.login.code = '';
         if (result && result.ok === 'yes') {
           this.loggedIn = true;
@@ -341,19 +352,19 @@ export class AppComponent implements OnInit {
       });
   }
 
-  isScriptError():boolean {
+  isScriptError(): boolean {  
     const sf = Object.keys(this.scriptFields);
     let err = false;
-    for (var i=0; i<sf.length; i++) {
-      err = err || this.scriptFields[sf[i]].error;    
+    for (var i = 0; i < sf.length; i++) {
+      err = err || this.scriptFields[sf[i]].error;
     }
     return err;
   }
 
   save(): void {
+    
     if (!this.changed) return;
     if (this.isScriptError()) return;
-
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
     this.klikket = true;

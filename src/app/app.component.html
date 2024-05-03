@@ -38,11 +38,11 @@
       </tr>
       <tr>
         <td class="marked-td">Kode</td>
-        <td class="marked-td"><input [(ngModel)]="login.code" (keyup.enter)="doLogin()" />
+        <td class="marked-td"><input [(ngModel)]="login.code" (keyup.enter)="doLogin($event)" />
         </td>
       </tr>
       <tr>
-        <td><button (click)="doLogin()">Log inn </button></td>
+        <td><button (click)="doLogin($event)">Log inn </button></td>
         <td>&nbsp;</td>
       </tr>
     </table>
