@@ -3,17 +3,12 @@
 export const doc_template = {
     companyId: '',
     rootDomain: '',
-    domainUrl: '',
     hostUrl: '',
-    websocketUrl: '',
     serviceUrl: '',
-    authToken: '',
     userName: '',
     domainName: '',
     domain: '',
     serviceName: '',
-    //password: '',
-    feature: '',
     active: '',
     DataSkjema: '',
     xml: '',
@@ -25,20 +20,7 @@ export const doc_template = {
     masterScript: '',
     preMasterScript: '',
     searchTerms: '',
-    instance: '',
-    mapID: '',
-    objectID: '',
-    refobjectID: '',
-    refDomain: '',
-    refService: '',
-    LinkSkjema: '',
-    links:
-      '',
-    newUserName: '',
     quantity: '',
-    transactiontimeout: '',
-    sendGhost: '',
-    receiveGhost: '',
   };
 
   const company_template = {

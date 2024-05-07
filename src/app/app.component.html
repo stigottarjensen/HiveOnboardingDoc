@@ -1,5 +1,6 @@
 <div [ngClass]="{'body-div': klikket}">
   <h2 (click)="showUserMenu($event)">Nornir </h2>
+  <!--new user menu-->
   <table *ngIf="userMenuVisible">
     <caption>Ny bruker</caption>
     <tr>
@@ -23,6 +24,7 @@
     </tr>
   </table>
   <img [src]="urlImg" *ngIf="userMenuVisible && urlImg.length>2" (click)="saveQRCode()">
+  <!--main menu-->
   <div *ngIf="!userMenuVisible">
     <table *ngIf="!loggedIn">
       <caption>Log inn</caption>
@@ -90,7 +92,7 @@
           <td colspan="1" class="marked-td">beskrivelse</td>
         </tr>
         <tr>
-          <td colspan="1" class="marked-td">Servis navn</td>
+          <td colspan="1" class="marked-td">Tjeneste navn</td>
           <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
           </td>
           <td colspan="1" class="marked-td">beskrivelse</td>
@@ -100,17 +102,7 @@
           <td colspan="1"><input [(ngModel)]="the_doc.userName" (change)="input_changed($event)" /></td>
           <td colspan="1">beskrivelse</td>
         </tr>
-        <tr>
-          <td colspan="1">Passord</td>
-          <td colspan="1"><input [(ngModel)]="the_doc.password" (change)="input_changed($event)" /> </td>
-          <td colspan="1">beskrivelse</td>
-        </tr>
 
-        <tr>
-          <td colspan="1">Domene url</td>
-          <td colspan="1"><span>{{the_doc['domainUrl']}}</span></td>
-          <td colspan="1">beskrivelse</td>
-        </tr>
         <tr>
           <td colspan="1">Host url</td>
           <td colspan="1"><span>{{the_doc['hostUrl']}}</span></td>
@@ -119,11 +111,6 @@
         <tr>
           <td colspan="1">Servis url</td>
           <td colspan="1"><span>{{the_doc['serviceUrl']}}</span></td>
-          <td colspan="1">beskrivelse</td>
-        </tr>
-        <tr>
-          <td colspan="1">Websocket url</td>
-          <td colspan="1"><span>{{the_doc['websocketUrl']}}</span></td>
           <td colspan="1">beskrivelse</td>
         </tr>
         <tr>
