@@ -37,6 +37,8 @@ export class AppComponent implements OnInit {
   loginApp = '/HiveOnboardingDoc/login';
   newUserApp = '/HiveOnboardingDoc/newuser';
   result: string = '';
+  cmdXMLTags:string='';
+  rtwXMLTags:string='';
 
   showUserMenu(event: { shiftKey: any }) {
     if (event.shiftKey) {
@@ -71,15 +73,14 @@ export class AppComponent implements OnInit {
     doc.hostUrl = domain + ':443';
     doc.websocketUrl = 'wss://' + domain + '/ws-c';
     doc.serviceUrl = 'https://' + domain + '/' + doc.serviceName;
-    doc.xml = this.makeXml('rtw', doc.DataSkjema);
-    doc.cmdxml = this.makeXml('cmd', doc.KommandoSkjema);
+    doc.xml = this.makeXml('rtw', this.rtwXMLTags);
+    doc.cmdxml = this.makeXml('cmd', this.cmdXMLTags);
   }
 
   login: any = {
     email: 'stigottar@nornir.io',
     pass: 'filip213',
-    code: '',
-    sqlserver:'p'
+    code: ''
   };
 
   textarea_content = '';
@@ -163,6 +164,8 @@ export class AppComponent implements OnInit {
       if (a.serviceName < b.serviceName) return -1;
       return 0;
     });
+    this.cmdXMLTags = this.getXMLTags(this.the_doc.cmdxml);
+    this.rtwXMLTags = this.getXMLTags(this.the_doc.xml);
     Object.keys(this.scriptFields).forEach((sfStr) => this.testScript(sfStr));
     this.editField = 'webjs';
     this.treeMenu = this.makeTreeMenuList();
@@ -322,6 +325,17 @@ export class AppComponent implements OnInit {
         }
         this.setDoc();
       });
+  }
+
+  getXMLTags(xml:string):string {
+    const node = (new DOMParser()).parseFromString(xml, "text/xml").documentElement;
+    console.log(node?.nodeName);
+    
+    const tags:string[] = [];
+    node?.childNodes.forEach((child)=> tags.push(child.nodeName));
+    console.log(tags.toString());
+    
+    return tags.toString();
   }
 
   selectedCompany: string = '';

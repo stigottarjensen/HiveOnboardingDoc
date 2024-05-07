@@ -115,7 +115,7 @@
         </tr>
         <tr>
           <td colspan="1">Data skjema</td>
-          <td colspan="1"><input [(ngModel)]="the_doc.DataSkjema" (change)="input_changed($event)" /></td>
+          <td colspan="1"><input [(ngModel)]="rtwXMLTags" (change)="input_changed($event)" /></td>
           <td colspan="1">beskrivelse</td>
         </tr>
         <tr>
@@ -123,33 +123,14 @@
         </tr>
         <tr>
           <td colspan="1">Kommando skjema</td>
-          <td colspan="1"><input [(ngModel)]="the_doc.KommandoSkjema" (change)="input_changed($event)" /></td>
+          <td colspan="1"><input [(ngModel)]="cmdXMLTags" (change)="input_changed($event)" /></td>
           <td colspan="1">beskrivelse</td>
         </tr>
         <tr>
           <td colspan="3"><span>{{the_doc['cmdxml']}}</span>
           </td>
         </tr>
-        <tr>
-          <td>GhostId send</td>
-          <td class="num_td"><input [(ngModel)]="the_doc.sendGhost" (change)="input_changed($event)" type="number"
-              class="num_input" /></td>
-          <td colspan="1">beskrivelse</td>
-        </tr>
-        <tr>
-          <td>GhostId receive</td>
-          <td class="num_td"><input [(ngModel)]="the_doc.receiveGhost" (change)="input_changed($event)" type="number"
-              class="num_input" />
-          </td>
-          <td colspan="1">beskrivelse</td>
-        </tr>
-        <tr>
-          <td>Object id</td>
-          <td class="num_td"><input [(ngModel)]="the_doc.objectID" (change)="input_changed($event)"
-              class="slim_input" />
-          </td>
-          <td colspan="1">beskrivelse</td>
-        </tr>
+       
         <tr>
           <td>Quantity</td>
           <td class="num_td"><input [(ngModel)]="the_doc.quantity" (change)="input_changed($event)"
@@ -191,13 +172,6 @@
           <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (keyup)="input_changed($event)" (focus)="editTextArea('preMasterScript')"/>
           </td>
           <td colspan="1">beskrivelse</td>
-        </tr>
-        <tr>
-          <td [ngClass]="{'mark-row':editField==='feature'}" >Feature</td>
-          <td class="num_td"><input [(ngModel)]="the_doc.feature" (keyup)="input_changed($event)" (focus)="editTextArea('feature')"/>
-          </td>
-          <td colspan="1">beskrivelse</td>
-
         </tr>
       </table>
       <div><textarea rows="15" cols="60" (keyup)="editTextArea($event)" [(ngModel)]="textarea_content"></textarea>
