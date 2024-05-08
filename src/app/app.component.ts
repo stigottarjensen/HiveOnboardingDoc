@@ -32,19 +32,56 @@ export class AppComponent implements OnInit {
     qrcode: '',
   };
 
-  ngOnInit(): void {
-//     let pubKey = forge.pki.publicKeyFromPem(publicKey);
-// let encryptText = pubKey.encrypt(forge.util.encodeUtf8("Some text"));
-   }
-
   host = 'http://localhost:8778';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
+  rsaKeyApp = '/HiveOnboardingDoc/rsapubkey';
   webAppComp = '/HiveOnboardingDoc/GetCompanies';
   loginApp = '/HiveOnboardingDoc/login';
   newUserApp = '/HiveOnboardingDoc/newuser';
+
+  pubKey: any;
+  rsaEncKey:any;
+  aesIV:any;
+  aesCipher:any;
+
+  initCrypt(result: any) {
+    const pubKey = forge.pki.publicKeyFromPem(result.rsapubkey);
+    const bytes = forge.random.getBytesSync(400);
+    this.rsaEncKey = pubKey.encrypt(bytes);
+    this.aesIV = forge.random.getBytesSync(16);
+    const md = forge.md.sha256.create();
+    md.update(bytes);
+    const aesKey = md.digest();
+    this.aesCipher = forge.cipher.createCipher('AES-CBC', aesKey);
+// cipher.start({iv: iv});
+// cipher.update(forge.util.createBuffer(someBytes));
+// cipher.finish();
+// const encrypted = cipher.output;
+
+  }
+
+  ngOnInit(): void {
+    this.http
+      .get(this.host + this.rsaKeyApp + this.getRandomUrl(), {
+        headers: this.httpHeaders,
+        responseType: 'json',
+        observe: 'body',
+        withCredentials: true,
+      })
+      .subscribe((result: any) => {
+        if (!result) {
+          return;
+        }
+        console.log(result);
+        this.initCrypt(result);
+      });
+
+    // let encryptText = pubKey.encrypt(forge.util.encodeUtf8("Some text"));
+  }
+
   result: string = '';
-  cmdXMLTags:string='';
-  rtwXMLTags:string='';
+  cmdXMLTags: string = '';
+  rtwXMLTags: string = '';
 
   showUserMenu(event: { shiftKey: any }) {
     if (event.shiftKey) {
@@ -66,7 +103,7 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         console.log(result);
-        
+
         this.urlImg = this.urlImgPrefix + result;
         this.new_user.qrcode = result;
         this.klikket = false;
@@ -86,7 +123,7 @@ export class AppComponent implements OnInit {
   login: any = {
     email: 'stigottar@nornir.io',
     pass: 'filip213',
-    code: ''
+    code: '',
   };
 
   textarea_content = '';
@@ -197,7 +234,6 @@ export class AppComponent implements OnInit {
     return M;
   }
 
-
   changed = false;
   editField: string | undefined;
 
@@ -252,11 +288,11 @@ export class AppComponent implements OnInit {
     this.testScript();
   }
 
-  doLogin(event:any): void {
+  doLogin(event: any): void {
     console.log(event);
-    
+
     //if (event.shiftKey)
-      this.login.sqlserver='p';
+    this.login.sqlserver = 'p';
     if (!this.login.code || !this.login.email || !this.login.pass) return;
     if (this.login.code.length !== 6) return;
     if (this.login.pass.length < 8) return;
@@ -273,7 +309,7 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         console.log(result);
-        
+
         this.login.code = '';
         if (result && result.ok === 'yes') {
           this.loggedIn = true;
@@ -330,14 +366,17 @@ export class AppComponent implements OnInit {
       });
   }
 
-  getXMLTags(xml:string):string {
-    const node = (new DOMParser()).parseFromString(xml, "text/xml").documentElement;
+  getXMLTags(xml: string): string {
+    const node = new DOMParser().parseFromString(
+      xml,
+      'text/xml'
+    ).documentElement;
     console.log(node?.nodeName);
-    
-    const tags:string[] = [];
-    node?.childNodes.forEach((child)=> tags.push(child.nodeName));
+
+    const tags: string[] = [];
+    node?.childNodes.forEach((child) => tags.push(child.nodeName));
     console.log(tags.toString());
-    
+
     return tags.toString();
   }
 
@@ -369,7 +408,7 @@ export class AppComponent implements OnInit {
       });
   }
 
-  isScriptError(): boolean {  
+  isScriptError(): boolean {
     const sf = Object.keys(this.scriptFields);
     let err = false;
     for (var i = 0; i < sf.length; i++) {
@@ -379,7 +418,6 @@ export class AppComponent implements OnInit {
   }
 
   save(): void {
-    
     if (!this.changed) return;
     if (this.isScriptError()) return;
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
