@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { doc_template } from './app.constants';
 import { catchError } from 'rxjs';
+import * as forge from 'node-forge';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,11 @@ export class AppComponent implements OnInit {
     pass: '',
     qrcode: '',
   };
+
+  ngOnInit(): void {
+//     let pubKey = forge.pki.publicKeyFromPem(publicKey);
+// let encryptText = pubKey.encrypt(forge.util.encodeUtf8("Some text"));
+   }
 
   host = 'http://localhost:8778';
   webApp = '/HiveOnboardingDoc/GetSaveDoc';
@@ -191,9 +197,6 @@ export class AppComponent implements OnInit {
     return M;
   }
 
-  ngOnInit(): void {
-   // this.doLogin();
-  }
 
   changed = false;
   editField: string | undefined;
