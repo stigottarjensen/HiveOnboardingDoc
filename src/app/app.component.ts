@@ -40,24 +40,34 @@ export class AppComponent implements OnInit {
   newUserApp = '/HiveOnboardingDoc/newuser';
 
   pubKey: any;
-  rsaEncKey:any;
+  rsaKem:any;
   aesIV:any;
   aesCipher:any;
 
   initCrypt(result: any) {
-    const pubKey = forge.pki.publicKeyFromPem(result.rsapubkey);
-    const bytes = forge.random.getBytesSync(400);
-    this.rsaEncKey = pubKey.encrypt(bytes);
-    this.aesIV = forge.random.getBytesSync(16);
-    const md = forge.md.sha256.create();
-    md.update(bytes);
-    const aesKey = md.digest();
-    this.aesCipher = forge.cipher.createCipher('AES-CBC', aesKey);
-// cipher.start({iv: iv});
-// cipher.update(forge.util.createBuffer(someBytes));
-// cipher.finish();
-// const encrypted = cipher.output;
+    this.pubKey = forge.pki.publicKeyFromPem(result.rsapubkey);
+  
+    // const kdf1 = new forge.kem.kdf1(forge.md.sha256.create());
+    // const kem = forge.kem.rsa.create(kdf1);
+    // this.rsaKem = kem.encrypt(pubKey, 32);  
+    // console.log(this.rsaKem.encapsulation);
+  }
 
+  doCrypt(data:string):string {
+    const rand = forge.random.getBytesSync(300);
+    const utf8rand = forge.util.encodeUtf8(rand);
+    const c = this.pubKey.encrypt(rand);
+    this.rsaKem = forge.util.createBuffer(c).toHex();
+    this.aesIV = forge.random.getBytesSync(16);
+    const sha2 = forge.md.sha256.create();
+    sha2.update(utf8rand);
+    const aesKey = sha2.digest();
+    this.aesCipher = forge.cipher.createCipher('AES-CBC', aesKey);
+    this.aesCipher.start({iv: this.aesIV});
+    this.aesCipher.update(forge.util.createBuffer(data));
+    this.aesCipher.finish();
+    const encrypted = this.aesCipher.output;
+    return encrypted.toHex();
   }
 
   ngOnInit(): void {
@@ -423,14 +433,23 @@ export class AppComponent implements OnInit {
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
     this.klikket = true;
+    const sendData = {theDoc:this.the_doc, cryptData:'', cryptKey:''};
+    const cryptData = this.doCrypt(JSON.stringify(this.the_doc));
+    sendData.cryptData = cryptData;
+    sendData.cryptKey = this.rsaKem;
+
+    console.log(sendData);
+    
     this.http
-      .post(this.host + this.webApp + this.getRandomUrl(), this.the_doc, {
+      .post(this.host + this.webApp + this.getRandomUrl(), sendData, {
         headers: this.httpHeaders,
         responseType: 'text',
         observe: 'body',
         withCredentials: true,
       })
       .subscribe((result: any) => {
+        console.log(result);
+        
         this.changed = false;
         this.klikket = false;
         if (result && result[0].login && result[0].login !== 'yes') {
