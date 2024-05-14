@@ -433,11 +433,11 @@ export class AppComponent implements OnInit {
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
     this.klikket = true;
-    const sendData = {theDoc:this.the_doc, cryptData:'', cryptKey:''};
+    const sendData = {theDoc:this.the_doc, cryptData:'', cryptKey:'', aesiv:''};
     const cryptData = this.doCrypt(JSON.stringify(this.the_doc));
     sendData.cryptData = cryptData;
     sendData.cryptKey = this.rsaKem;
-
+    sendData.aesiv = forge.util.bytesToHex(this.aesIV);
     console.log(sendData);
     
     this.http
