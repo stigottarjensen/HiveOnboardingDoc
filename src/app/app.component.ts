@@ -54,20 +54,24 @@ export class AppComponent implements OnInit {
   }
 
   doCrypt(data:string):string {
-    const rand = forge.random.getBytesSync(300);
-    const utf8rand = forge.util.encodeUtf8(rand);
+    const rand = forge.random.getBytesSync(200);
+   // const utf8rand = forge.util.encodeUtf8(rand);
     const c = this.pubKey.encrypt(rand);
-    this.rsaKem = forge.util.createBuffer(c).toHex();
+    this.rsaKem = btoa(c);//forge.util.createBuffer(c));
     this.aesIV = forge.random.getBytesSync(16);
     const sha2 = forge.md.sha256.create();
-    sha2.update(utf8rand);
+    sha2.update(rand);
     const aesKey = sha2.digest();
+    console.log(btoa(aesKey.data));
+    
     this.aesCipher = forge.cipher.createCipher('AES-CBC', aesKey);
     this.aesCipher.start({iv: this.aesIV});
     this.aesCipher.update(forge.util.createBuffer(data));
     this.aesCipher.finish();
     const encrypted = this.aesCipher.output;
-    return encrypted.toHex();
+    console.log(encrypted);
+    
+    return btoa(encrypted.data);
   }
 
   ngOnInit(): void {
@@ -437,7 +441,7 @@ export class AppComponent implements OnInit {
     const cryptData = this.doCrypt(JSON.stringify(this.the_doc));
     sendData.cryptData = cryptData;
     sendData.cryptKey = this.rsaKem;
-    sendData.aesiv = forge.util.bytesToHex(this.aesIV);
+    sendData.aesiv = btoa(this.aesIV);// forge.util.bytesToHex(this.aesIV);
     console.log(sendData);
     
     this.http
