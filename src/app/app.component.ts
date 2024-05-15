@@ -39,42 +39,59 @@ export class AppComponent implements OnInit {
   loginApp = '/HiveOnboardingDoc/login';
   newUserApp = '/HiveOnboardingDoc/newuser';
 
-  pubKey: any;
-  rsaKem:any;
-  aesIV:any;
-  aesCipher:any;
+  // pubKey: any;
+  // rsaKem:any;
+  // aesIV:any;
+  // aesCipher:any;
+  rounds = 2000;
+  pass = 'qazxswedc';
+  pubKey: forge.pki.rsa.PublicKey | any;
+  validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-  initCrypt(result: any) {
-    this.pubKey = forge.pki.publicKeyFromPem(result.rsapubkey);
-  
-    // const kdf1 = new forge.kem.kdf1(forge.md.sha256.create());
-    // const kem = forge.kem.rsa.create(kdf1);
-    // this.rsaKem = kem.encrypt(pubKey, 32);  
-    // console.log(this.rsaKem.encapsulation);
+  makeRamdomPassPhrase(): string {
+    const pwlen = 300;
+    const pwchars =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const limit = 256 - (256 % pwchars.length);
+
+    let passwd = '';
+    let randval;
+    for (let i = 0; i < pwlen; i++) {
+      do {
+        randval = window.crypto.getRandomValues(new Uint8Array(1))[0];
+      } while (randval >= limit);
+      passwd += pwchars[randval % pwchars.length];
+    }
+    return '#'+passwd;
   }
 
-  doCrypt(data:string):string {
-    const rand = forge.random.getBytesSync(200);
-   // const utf8rand = forge.util.encodeUtf8(rand);
-    const c = this.pubKey.encrypt(rand);
-    this.rsaKem = btoa(c);//forge.util.createBuffer(c));
-    this.aesIV = forge.random.getBytesSync(16);
-    const sha2 = forge.md.sha256.create();
-    sha2.update(rand);
-    const aesKey = sha2.digest();
-    console.log(btoa(aesKey.data));
-    
-    this.aesCipher = forge.cipher.createCipher('AES-CBC', aesKey);
-    this.aesCipher.start({iv: this.aesIV});
-    this.aesCipher.update(forge.util.createBuffer(data));
-    this.aesCipher.finish();
-    const encrypted = this.aesCipher.output;
-    console.log(encrypted);
-    
-    return btoa(encrypted.data);
+  doCrypt(data: string): any {
+    const salt = forge.random.getBytesSync(32);
+    const pass = this.makeRamdomPassPhrase();
+    const cryptpass = this.pubKey.encrypt(pass);
+    console.log(salt.length);
+
+    const iv = forge.random.getBytesSync(16);
+    const saltB64 = btoa(salt); // lager tilfeldig salt verdi som base64 tekst
+    const md = forge.md.sha256.create();
+    const aesKey = forge.pkcs5.pbkdf2(pass, salt, this.rounds, 32, md);
+
+    const aesCipher = forge.cipher.createCipher('AES-CBC', aesKey);
+    aesCipher.start({ iv: iv });
+    aesCipher.update(forge.util.createBuffer(data));
+    aesCipher.finish();
+    const encrypted = aesCipher.output;
+    return {
+      encrypted: btoa(encrypted.data),
+      iv: btoa(iv),
+      salt: saltB64,
+      cryptpass: btoa(cryptpass),
+    };
   }
 
   ngOnInit(): void {
+    console.log(this.validChars.length);
+
     this.http
       .get(this.host + this.rsaKeyApp + this.getRandomUrl(), {
         headers: this.httpHeaders,
@@ -87,9 +104,13 @@ export class AppComponent implements OnInit {
           return;
         }
         console.log(result);
-        this.initCrypt(result);
-      });
 
+        this.pubKey = forge.pki.publicKeyFromPem(result.rsapubkey);
+        
+        console.log(this.pubKey);
+
+        //this.doCrypt(this.pass,'qwertyuiop');
+      });
     // let encryptText = pubKey.encrypt(forge.util.encodeUtf8("Some text"));
   }
 
@@ -437,13 +458,10 @@ export class AppComponent implements OnInit {
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
     this.klikket = true;
-    const sendData = {theDoc:this.the_doc, cryptData:'', cryptKey:'', aesiv:''};
-    const cryptData = this.doCrypt(JSON.stringify(this.the_doc));
-    sendData.cryptData = cryptData;
-    sendData.cryptKey = this.rsaKem;
-    sendData.aesiv = btoa(this.aesIV);// forge.util.bytesToHex(this.aesIV);
+    const sendData = { theDoc: this.the_doc, cryptData: {} };
+    sendData.cryptData = this.doCrypt(JSON.stringify(this.the_doc));
     console.log(sendData);
-    
+
     this.http
       .post(this.host + this.webApp + this.getRandomUrl(), sendData, {
         headers: this.httpHeaders,
@@ -453,7 +471,7 @@ export class AppComponent implements OnInit {
       })
       .subscribe((result: any) => {
         console.log(result);
-        
+
         this.changed = false;
         this.klikket = false;
         if (result && result[0].login && result[0].login !== 'yes') {
