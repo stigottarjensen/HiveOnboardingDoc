@@ -33,7 +33,8 @@ export class AppComponent implements OnInit {
   };
 
   host = 'http://localhost:8778';
-  webApp = '/HiveOnboardingDoc/GetSaveDoc';
+  getDocUrl = '/HiveOnboardingDoc/GetDoc';
+  saveDocUrl = '/HiveOnboardingDoc/SaveDoc';
   rsaKeyApp = '/HiveOnboardingDoc/rsapubkey';
   webAppComp = '/HiveOnboardingDoc/GetCompanies';
   loginApp = '/HiveOnboardingDoc/login';
@@ -62,31 +63,51 @@ export class AppComponent implements OnInit {
       } while (randval >= limit);
       passwd += pwchars[randval % pwchars.length];
     }
-    return '#'+passwd;
+    return '#' + passwd;
   }
 
-  doCrypt(data: string): any {
+  getAESParams(): any {
     const salt = forge.random.getBytesSync(32);
     const pass = this.makeRamdomPassPhrase();
     const cryptpass = this.pubKey.encrypt(pass);
-    console.log(salt.length);
-
     const iv = forge.random.getBytesSync(16);
-    const saltB64 = btoa(salt); // lager tilfeldig salt verdi som base64 tekst
-    const md = forge.md.sha256.create();
-    const aesKey = forge.pkcs5.pbkdf2(pass, salt, this.rounds, 32, md);
+    return { salt: salt, pass: pass, cryptpass: cryptpass, iv: iv };
+  }
 
-    const aesCipher = forge.cipher.createCipher('AES-CBC', aesKey);
-    aesCipher.start({ iv: iv });
+  doCrypt(data: string, aesparams?: any): any {
+    let encrypt = true;
+    if (!aesparams) {
+      encrypt = false;
+      aesparams = this.getAESParams();
+    }
+    const saltB64 = btoa(aesparams.salt); // lager tilfeldig salt verdi som base64 tekst
+    const md = forge.md.sha256.create();
+    const aesKey = forge.pkcs5.pbkdf2(
+      aesparams.pass,
+      aesparams.salt,
+      this.rounds,
+      32,
+      md
+    );
+
+    const aesCipher = encrypt
+      ? forge.cipher.createCipher('AES-CBC', aesKey)
+      : forge.cipher.createDecipher('AES-CBC', aesKey);
+    aesCipher.start({ iv: aesparams.iv });
     aesCipher.update(forge.util.createBuffer(data));
     aesCipher.finish();
-    const encrypted = aesCipher.output;
+    const processed = aesCipher.output;
+    if (encrypt)
     return {
-      encrypted: btoa(encrypted.data),
-      iv: btoa(iv),
+      encrypted: btoa(processed.data),
+      iv: btoa(aesparams.iv),
       salt: saltB64,
-      cryptpass: btoa(cryptpass),
+      cryptpass: btoa(aesparams.cryptpass),
     };
+    else {
+      console.log(processed);
+      return forge.util.
+    }
   }
 
   ngOnInit(): void {
@@ -103,12 +124,8 @@ export class AppComponent implements OnInit {
         if (!result) {
           return;
         }
-        console.log(result);
 
         this.pubKey = forge.pki.publicKeyFromPem(result.rsapubkey);
-        
-        console.log(this.pubKey);
-
         //this.doCrypt(this.pass,'qwertyuiop');
       });
     // let encryptText = pubKey.encrypt(forge.util.encodeUtf8("Some text"));
@@ -324,19 +341,16 @@ export class AppComponent implements OnInit {
   }
 
   doLogin(event: any): void {
-    console.log(event);
-
-    //if (event.shiftKey)
     this.login.sqlserver = 'p';
     if (!this.login.code || !this.login.email || !this.login.pass) return;
     if (this.login.code.length !== 6) return;
     if (this.login.pass.length < 8) return;
     if (this.login.email.length < 7) return;
     this.klikket = true;
-    const url = this.host + this.loginApp;
 
+    const encrypted = this.doCrypt(JSON.stringify(this.login));
     this.http
-      .post(this.host + this.loginApp + this.getRandomUrl(), this.login, {
+      .post(this.host + this.loginApp + this.getRandomUrl(), encrypted, {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
@@ -369,11 +383,16 @@ export class AppComponent implements OnInit {
   }
 
   getDocs(compId?: string): void {
-    const urlen =
-      this.host + this.webApp + this.getRandomUrl() + `?companyId=${compId}`;
+    const aesparams = this.getAESParams();
+    const body = {
+      companyId: compId,
+      ...aesparams,
+    };
+
+    const urlen = this.host + this.getDocUrl + this.getRandomUrl();
     this.klikket = true;
     this.http
-      .get(urlen, {
+      .post(urlen, body, {
         headers: this.httpHeaders,
         responseType: 'json',
         observe: 'body',
@@ -463,7 +482,7 @@ export class AppComponent implements OnInit {
     console.log(sendData);
 
     this.http
-      .post(this.host + this.webApp + this.getRandomUrl(), sendData, {
+      .post(this.host + this.saveDocUrl + this.getRandomUrl(), sendData, {
         headers: this.httpHeaders,
         responseType: 'text',
         observe: 'body',
@@ -523,7 +542,7 @@ export class AppComponent implements OnInit {
     this.klikket = true;
 
     this.http
-      .post(this.host + this.webApp + this.getRandomUrl(), body, {
+      .post(this.host + this.saveDocUrl + this.getRandomUrl(), body, {
         headers: this.httpHeaders,
         responseType: 'text',
         observe: 'body',
