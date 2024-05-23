@@ -40,10 +40,6 @@ export class AppComponent implements OnInit {
   loginApp = '/HiveOnboardingDoc/login';
   newUserApp = '/HiveOnboardingDoc/newuser';
 
-  // pubKey: any;
-  // rsaKem:any;
-  // aesIV:any;
-  // aesCipher:any;
   rounds = 2000;
   pass = 'qazxswedc';
   pubKey: forge.pki.rsa.PublicKey | any;
@@ -74,10 +70,17 @@ export class AppComponent implements OnInit {
     return { salt: salt, pass: pass, cryptpass: cryptpass, iv: iv };
   }
 
-  doCrypt(data: string, aesparams?: any): any {
-    let encrypt = true;
+  getAESParEncoded(params: any): any {
+    return {
+      salt: btoa(params.salt),
+      pass: btoa(params.pass),
+      cryptpass: btoa(params.cryptpass),
+      iv: btoa(params.iv),
+    };
+  }
+
+  doCrypt(encrypt: boolean, data: string, aesparams?: any): any {
     if (!aesparams) {
-      encrypt = false;
       aesparams = this.getAESParams();
     }
     const saltB64 = btoa(aesparams.salt); // lager tilfeldig salt verdi som base64 tekst
@@ -91,23 +94,69 @@ export class AppComponent implements OnInit {
     );
 
     const aesCipher = encrypt
-      ? forge.cipher.createCipher('AES-CBC', aesKey)
-      : forge.cipher.createDecipher('AES-CBC', aesKey);
+      ? forge.cipher.createCipher('AES-OFB', aesKey)
+      : forge.cipher.createDecipher('AES-OFB', aesKey);
     aesCipher.start({ iv: aesparams.iv });
-    aesCipher.update(forge.util.createBuffer(data));
+    
+    const buff = encrypt
+      ? forge.util.createBuffer(data, 'utf8')
+      : forge.util.createBuffer(forge.util.decode64(data));
+    console.log('BUFF', buff);
+   
+
+    aesCipher.update(buff);
     aesCipher.finish();
     const processed = aesCipher.output;
     if (encrypt)
-    return {
-      encrypted: btoa(processed.data),
-      iv: btoa(aesparams.iv),
-      salt: saltB64,
-      cryptpass: btoa(aesparams.cryptpass),
-    };
+      return {
+        encrypted: btoa(processed.data),
+        iv: btoa(aesparams.iv),
+        salt: saltB64,
+        cryptpass: btoa(aesparams.cryptpass),
+      };
     else {
-      console.log(processed);
-      return forge.util.
+      const t = processed.toString();
+      console.log(t);
+      return JSON.parse(t);
     }
+  }
+
+  getDocs(compId?: string): void {
+    const aesparams = this.getAESParams();
+    const body = {
+      companyId: compId,
+      ...this.getAESParEncoded(aesparams),
+    };
+
+    const urlen = this.host + this.getDocUrl + this.getRandomUrl();
+    this.klikket = true;
+    this.http
+      .post(urlen, body, {
+        headers: this.httpHeaders,
+        responseType: 'text',
+        observe: 'body',
+        withCredentials: true,
+      })
+      .subscribe((res: any) => {
+        console.log(res);
+        const result = this.doCrypt(false, res, aesparams);
+        if (
+          result &&
+          result.length > 0 &&
+          result[0].login &&
+          result[0].login !== 'yes'
+        ) {
+          this.loggedIn = false;
+          this.klikket = false;
+          return;
+        }
+        this.doc_list = result;
+        if (this.doc_list.length < 1) {
+          this.doc_list.push(JSON.parse(JSON.stringify(doc_template)));
+          this.doc_list[0].companyId = compId;
+        }
+        this.setDoc();
+      });
   }
 
   ngOnInit(): void {
@@ -126,10 +175,8 @@ export class AppComponent implements OnInit {
         }
 
         this.pubKey = forge.pki.publicKeyFromPem(result.rsapubkey);
-        //this.doCrypt(this.pass,'qwertyuiop');
       });
-    // let encryptText = pubKey.encrypt(forge.util.encodeUtf8("Some text"));
-  }
+    }
 
   result: string = '';
   cmdXMLTags: string = '';
@@ -347,8 +394,13 @@ export class AppComponent implements OnInit {
     if (this.login.pass.length < 8) return;
     if (this.login.email.length < 7) return;
     this.klikket = true;
+    const aesparams = this.getAESParams();
+    const encrypted = this.doCrypt(true, JSON.stringify(this.login), aesparams);
+    // console.log('*********************');
 
-    const encrypted = this.doCrypt(JSON.stringify(this.login));
+    // this.doCrypt(false,encrypted.encrypted,aesparams);
+    // console.log('@@@@@@@@@@@@@@@@@@@@');
+
     this.http
       .post(this.host + this.loginApp + this.getRandomUrl(), encrypted, {
         headers: this.httpHeaders,
@@ -380,44 +432,6 @@ export class AppComponent implements OnInit {
       () => (this.loggedIn = false),
       this.session_timeout_ms
     );
-  }
-
-  getDocs(compId?: string): void {
-    const aesparams = this.getAESParams();
-    const body = {
-      companyId: compId,
-      ...aesparams,
-    };
-
-    const urlen = this.host + this.getDocUrl + this.getRandomUrl();
-    this.klikket = true;
-    this.http
-      .post(urlen, body, {
-        headers: this.httpHeaders,
-        responseType: 'json',
-        observe: 'body',
-        withCredentials: true,
-      })
-      .subscribe((result: any) => {
-        console.log(result);
-
-        if (
-          result &&
-          result.length > 0 &&
-          result[0].login &&
-          result[0].login !== 'yes'
-        ) {
-          this.loggedIn = false;
-          this.klikket = false;
-          return;
-        }
-        this.doc_list = result;
-        if (this.doc_list.length < 1) {
-          this.doc_list.push(JSON.parse(JSON.stringify(doc_template)));
-          this.doc_list[0].companyId = compId;
-        }
-        this.setDoc();
-      });
   }
 
   getXMLTags(xml: string): string {
@@ -478,7 +492,7 @@ export class AppComponent implements OnInit {
       this.the_doc.companyId = this.selectedCompany;
     this.klikket = true;
     const sendData = { theDoc: this.the_doc, cryptData: {} };
-    sendData.cryptData = this.doCrypt(JSON.stringify(this.the_doc));
+    sendData.cryptData = this.doCrypt(true, JSON.stringify(this.the_doc));
     console.log(sendData);
 
     this.http
