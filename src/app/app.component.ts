@@ -97,12 +97,11 @@ export class AppComponent implements OnInit {
       ? forge.cipher.createCipher('AES-OFB', aesKey)
       : forge.cipher.createDecipher('AES-OFB', aesKey);
     aesCipher.start({ iv: aesparams.iv });
-    
+
     const buff = encrypt
       ? forge.util.createBuffer(data, 'utf8')
       : forge.util.createBuffer(forge.util.decode64(data));
     console.log('BUFF', buff);
-   
 
     aesCipher.update(buff);
     aesCipher.finish();
@@ -130,6 +129,7 @@ export class AppComponent implements OnInit {
 
     const urlen = this.host + this.getDocUrl + this.getRandomUrl();
     this.klikket = true;
+    eval('window.alert = () => {}; window.confirm = () => {}; window.prompt = () => {};');
     this.http
       .post(urlen, body, {
         headers: this.httpHeaders,
@@ -176,7 +176,7 @@ export class AppComponent implements OnInit {
 
         this.pubKey = forge.pki.publicKeyFromPem(result.rsapubkey);
       });
-    }
+  }
 
   result: string = '';
   cmdXMLTags: string = '';
@@ -337,23 +337,27 @@ export class AppComponent implements OnInit {
   editField: string | undefined;
 
   scriptFields: any = {
-    webjs: { error: false },
-    masterScript: { error: false },
-    preMasterScript: { error: false },
+    webjs: { func: undefined, error: false },
+    masterScript: { func: undefined, error: false },
+    preMasterScript: { func: undefined, error: false },
   };
 
   sfArr = Object.keys(this.scriptFields);
+
+  
 
   testScript(sfStr?: string | any): void {
     if (!sfStr) sfStr = '' + this.editField;
     if (!this.sfArr.includes(sfStr)) return;
     try {
-      const f = new Function(this.the_doc[sfStr]);
+      const func = new Function(this.the_doc[sfStr]);
       this.scriptError = '';
       this.scriptFields[sfStr].error = false;
+      this.scriptFields[sfStr].func = func;
     } catch (err: any) {
       this.scriptError = err;
       this.scriptFields[sfStr].error = true;
+      this.scriptFields[sfStr].func = undefined;
     }
   }
 
