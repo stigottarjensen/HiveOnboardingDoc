@@ -24,6 +24,8 @@ export class AppComponent implements OnInit {
   urlImgPrefix = 'data:image/png;base64,';
   urlImg = '';
   klikket = false;
+  showSchemaInfo = false;
+  showCompanyInfo = true;
 
   new_user = {
     name: '',
@@ -159,7 +161,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.http
       .get(this.host + this.rsaKeyApp + this.getRandomUrl(), {
         headers: this.httpHeaders,
@@ -199,7 +200,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-
         this.urlImg = this.urlImgPrefix + result;
         this.new_user.qrcode = result;
         this.klikket = false;
@@ -311,7 +311,13 @@ export class AppComponent implements OnInit {
     this.klikket = false;
   }
 
-  makeTreeMenuList(): Map<string, Map<string, any[]>> {
+  makeTreeMenuList(): Map<string, Map<string, any[]>> | any {
+    if (
+      !this.doc_list ||
+      this.doc_list.length < 1 ||
+      this.doc_list[0].rootDomain.length < 3
+    )
+      return null;
     const M = new Map<string, Map<string, any[]>>();
     this.doc_list.forEach((element: any) => {
       let m = M.get(element.rootDomain);
@@ -358,7 +364,10 @@ export class AppComponent implements OnInit {
 
   input_changed(event: any): void {
     this.makeUrls(this.the_doc);
-    this.changed = true;
+    this.changed =
+      this.the_doc.rootDomain !== '' &&
+      this.the_doc.domain !== '' &&
+      this.the_doc.serviceName !== '';
     if (this.editField) {
       this.textarea_content = this.the_doc[this.editField];
       this.testScript();
@@ -404,7 +413,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-
         this.login.code = '';
         if (result && result.ok === 'yes') {
           this.loggedIn = true;
@@ -440,10 +448,12 @@ export class AppComponent implements OnInit {
     return tags.toString();
   }
 
-  selectedCompany: string = '';
+  selectedCompanyId: string = '';
+  selectedCompany:any = {};
 
   onCompChange(event: any) {
-    this.getDocs(this.selectedCompany);
+    this.selectedCompany= this.company_list.find(e => e.orgnr===this.selectedCompanyId);
+    this.getDocs(this.selectedCompanyId);
   }
 
   getCompanies(): void {
@@ -463,8 +473,9 @@ export class AppComponent implements OnInit {
         }
 
         this.company_list = result;
-        this.selectedCompany = this.company_list[0].orgnr;
-        this.getDocs(this.selectedCompany);
+        this.selectedCompany = this.company_list[0];
+        this.selectedCompanyId = this.selectedCompany.orgnr;
+        this.getDocs(this.selectedCompanyId);
       });
   }
 
@@ -481,7 +492,7 @@ export class AppComponent implements OnInit {
     if (!this.changed) return;
     if (this.isScriptError()) return;
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
-      this.the_doc.companyId = this.selectedCompany;
+      this.the_doc.companyId = this.selectedCompanyId;
     this.klikket = true;
     const sendData = {
       serviceUrl: this.the_doc.serviceUrl,
@@ -498,14 +509,13 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-
         this.changed = false;
         this.klikket = false;
         if (result && result[0].login && result[0].login !== 'yes') {
           this.loggedIn = false;
           return;
         }
-        this.getDocs(this.selectedCompany);
+        this.getDocs(this.selectedCompanyId);
       });
   }
 
@@ -534,7 +544,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  saveCompany() {
+  saveNewCompany() {
     if (
       this.new_company.trim() === '!!Feil!!' ||
       this.new_company.trim() === '' ||
