@@ -101,7 +101,6 @@ export class AppComponent implements OnInit {
     const buff = encrypt
       ? forge.util.createBuffer(data, 'utf8')
       : forge.util.createBuffer(forge.util.decode64(data));
-    console.log('BUFF', buff);
 
     aesCipher.update(buff);
     aesCipher.finish();
@@ -115,7 +114,6 @@ export class AppComponent implements OnInit {
       };
     else {
       const t = processed.toString();
-      console.log(t);
       return JSON.parse(t);
     }
   }
@@ -129,7 +127,9 @@ export class AppComponent implements OnInit {
 
     const urlen = this.host + this.getDocUrl + this.getRandomUrl();
     this.klikket = true;
-    eval('window.alert = () => {}; window.confirm = () => {}; window.prompt = () => {};');
+    eval(
+      'window.alert = () => {}; window.confirm = () => {}; window.prompt = () => {};'
+    );
     this.http
       .post(urlen, body, {
         headers: this.httpHeaders,
@@ -138,7 +138,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((res: any) => {
-        console.log(res);
         const result = this.doCrypt(false, res, aesparams);
         if (
           result &&
@@ -160,7 +159,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.validChars.length);
 
     this.http
       .get(this.host + this.rsaKeyApp + this.getRandomUrl(), {
@@ -201,7 +199,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
 
         this.urlImg = this.urlImgPrefix + result;
         this.new_user.qrcode = result;
@@ -344,8 +341,6 @@ export class AppComponent implements OnInit {
 
   sfArr = Object.keys(this.scriptFields);
 
-  
-
   testScript(sfStr?: string | any): void {
     if (!sfStr) sfStr = '' + this.editField;
     if (!this.sfArr.includes(sfStr)) return;
@@ -400,10 +395,6 @@ export class AppComponent implements OnInit {
     this.klikket = true;
     const aesparams = this.getAESParams();
     const encrypted = this.doCrypt(true, JSON.stringify(this.login), aesparams);
-    // console.log('*********************');
-
-    // this.doCrypt(false,encrypted.encrypted,aesparams);
-    // console.log('@@@@@@@@@@@@@@@@@@@@');
 
     this.http
       .post(this.host + this.loginApp + this.getRandomUrl(), encrypted, {
@@ -413,7 +404,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
 
         this.login.code = '';
         if (result && result.ok === 'yes') {
@@ -443,11 +433,9 @@ export class AppComponent implements OnInit {
       xml,
       'text/xml'
     ).documentElement;
-    console.log(node?.nodeName);
 
     const tags: string[] = [];
     node?.childNodes.forEach((child) => tags.push(child.nodeName));
-    console.log(tags.toString());
 
     return tags.toString();
   }
@@ -495,9 +483,12 @@ export class AppComponent implements OnInit {
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
       this.the_doc.companyId = this.selectedCompany;
     this.klikket = true;
-    const sendData = { theDoc: this.the_doc, cryptData: {} };
+    const sendData = {
+      serviceUrl: this.the_doc.serviceUrl,
+      companyId: this.the_doc.companyId,
+      cryptData: {},
+    };
     sendData.cryptData = this.doCrypt(true, JSON.stringify(this.the_doc));
-    console.log(sendData);
 
     this.http
       .post(this.host + this.saveDocUrl + this.getRandomUrl(), sendData, {
@@ -507,7 +498,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
 
         this.changed = false;
         this.klikket = false;
