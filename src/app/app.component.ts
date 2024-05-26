@@ -456,7 +456,7 @@ export class AppComponent implements OnInit {
     this.getDocs(this.selectedCompanyId);
   }
 
-  getCompanies(): void {
+  getCompanies(orgnr?:string): void {
     this.klikket = true;
     this.http
       .get(this.host + this.webAppComp + this.getRandomUrl(), {
@@ -473,7 +473,7 @@ export class AppComponent implements OnInit {
         }
 
         this.company_list = result;
-        this.selectedCompany = this.company_list[0];
+        this.selectedCompany = this.company_list.find((c)=>c.orgnr===orgnr);
         this.selectedCompanyId = this.selectedCompany.orgnr;
         this.getDocs(this.selectedCompanyId);
       });
@@ -571,7 +571,7 @@ export class AppComponent implements OnInit {
           this.loggedIn = false;
           return;
         }
-        this.getCompanies();
+        this.getCompanies(this.new_orgnr);
         this.new_company = '';
         this.new_orgnr = '';
         this.new_info_json = {};
