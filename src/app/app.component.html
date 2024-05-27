@@ -50,7 +50,7 @@
     </table>
 
     <div *ngIf="loggedIn" class="top_container">
-      <p>
+      <div>
         <select [(ngModel)]="selectedCompanyId" (change)="onCompChange($event)">
           <option *ngFor="let comp of company_list;" [value]="comp.orgnr" [selected]="comp.orgnr===selectedCompanyId">
             {{comp.name}}</option>
@@ -60,18 +60,49 @@
         &nbsp;&nbsp;
         <input type="checkbox" [(ngModel)]="showSchemaInfo" id="schemaCheck"> <label for="schemaCheck"> Vis
           skjemainfo</label>
-        </p>
-      <p *ngIf="showCompanyInfo">
+      </div>
+      <div *ngIf="showCompanyInfo">
         <span>Nytt firma: OrgNr&nbsp;</span><input [(ngModel)]="new_orgnr" class="org_input" maxlength="9"
           (keyup)="orgNrChange()">&nbsp;
         <span>&nbsp;Navn&nbsp;<span>{{new_company}}</span>&nbsp;</span>
         <button (click)="saveNewCompany()"
           [ngClass]="{'active':new_company.trim()!=='!!Feil!!' && new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
-      </p>
-
-
-
+      </div>
     </div>
+
+    <div *ngIf="loggedIn && showCompanyInfo">
+      <h3>Kontaktinfo</h3>
+      <input type="checkbox" [(ngModel)]="companyInfoEdit" id="companyEditCheck"> <label for="companyEditCheck">Rediger
+        firmainfo</label>
+      <table>
+        <tr>
+          <td>Navn</td>
+          <td>Infotekst</td>
+        </tr>
+        <tr>
+          <td *ngIf="!companyInfoEdit">{{selectedCompany.contactName}}</td>
+          <td *ngIf="companyInfoEdit"><input [(ngModel)]="selectedCompany.contactName"></td>
+          <td *ngIf="!companyInfoEdit" rowspan="5">{{selectedCompany.infoText}}</td>
+          <td *ngIf="companyInfoEdit" rowspan="5">
+            <textarea rows="15" cols="60" [(ngModel)]="selectedCompany.infoText"></textarea>
+          </td>
+        </tr>
+        <tr>
+          <td>Mobil</td>
+        </tr>
+        <tr>
+          <td *ngIf="!companyInfoEdit">{{selectedCompany.contactMobil}}</td>
+          <td *ngIf="companyInfoEdit"><input [(ngModel)]="selectedCompany.contactMobil"></td>
+        </tr>
+        <tr>
+          <td>Email</td>
+        <tr>
+          <td *ngIf="!companyInfoEdit">{{selectedCompany.contactEmail}}</td>
+          <td *ngIf="companyInfoEdit"><input [(ngModel)]="selectedCompany.contactEmail"></td>
+        </tr>
+      </table>
+    </div>
+
 
     <div *ngIf="loggedIn && showSchemaInfo" class="container">
       <div class="sidemenu">

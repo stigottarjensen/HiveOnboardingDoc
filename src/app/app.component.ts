@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
   host = 'http://localhost:8778';
   getDocUrl = '/HiveOnboardingDoc/GetDoc';
   saveDocUrl = '/HiveOnboardingDoc/SaveDoc';
+  updateCompanyUrl = '/HiveOnboardingDoc/UpdateCompany';
   rsaKeyApp = '/HiveOnboardingDoc/rsapubkey';
   webAppComp = '/HiveOnboardingDoc/GetCompanies';
   loginApp = '/HiveOnboardingDoc/login';
@@ -120,6 +121,90 @@ export class AppComponent implements OnInit {
     }
   }
 
+  saveNewCompany() {
+    if (
+      this.new_company.trim() === '!!Feil!!' ||
+      this.new_company.trim() === '' ||
+      this.new_orgnr.trim().length !== 9
+    ) {
+      this.new_orgnr = this.selectedCompanyId;
+    }
+
+    const body = {
+      orgnr: this.new_orgnr,
+      companyName: this.new_company,
+      infoJSON: this.new_info_json,
+      cryptData: {},
+    };
+    body.cryptData = this.doCrypt(true, JSON.stringify(this.selectedCompany));
+    this.klikket = true;
+    console.log(body);
+    
+
+    this.http
+      .post(this.host + this.updateCompanyUrl + this.getRandomUrl(), body, {
+        headers: this.httpHeaders,
+        responseType: 'text',
+        observe: 'body',
+        withCredentials: true,
+      })
+      .subscribe((result: any) => {
+        console.log(result);
+
+        if (result && result[0].login && result[0].login !== 'yes') {
+          this.loggedIn = false;
+          return;
+        }
+        this.getCompanies(this.new_orgnr);
+        this.new_company = '';
+        this.new_orgnr = '';
+        this.new_info_json = {};
+        this.klikket = true;
+      });
+  }
+
+  getCompanies(orgnr?: string): void {
+    const aesparams = this.getAESParams();
+    const body = {
+      companyId: orgnr,
+      ...this.getAESParEncoded(aesparams),
+    };
+    this.klikket = true;
+    this.http
+      .post(this.host + this.webAppComp + this.getRandomUrl(), body, {
+        headers: this.httpHeaders,
+        responseType: 'text',
+        observe: 'body',
+        withCredentials: true,
+      })
+      .subscribe((res: any) => {
+        console.log(res);
+
+        const result = this.doCrypt(false, res, aesparams);
+        console.log(result);
+
+        if (
+          result &&
+          result[0] &&
+          result[0].login &&
+          result[0].login !== 'yes'
+        ) {
+          this.loggedIn = false;
+          this.klikket = false;
+          return;
+        }
+
+        this.company_list = result;
+        if (orgnr) {
+          this.selectedCompany = this.company_list.find(
+            (c) => c.orgnr === orgnr
+          );
+          this.selectedCompanyId = orgnr;
+        }
+        this.getDocs(this.selectedCompanyId);
+      });
+  }
+
   getDocs(compId?: string): void {
     const aesparams = this.getAESParams();
     const body = {
@@ -140,7 +225,9 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((res: any) => {
-        const result = this.doCrypt(false, res, aesparams);
+        let result: any = false;
+        if (res && res.length > 10)
+          result = this.doCrypt(false, res, aesparams);
         if (
           result &&
           result.length > 0 &&
@@ -449,34 +536,19 @@ export class AppComponent implements OnInit {
   }
 
   selectedCompanyId: string = '';
-  selectedCompany:any = {};
+  selectedCompany: any = {
+    contactName: 'Snurre Sprett',
+    contactMobil: '98765432',
+    contactEmail: 'snurre@sprett.net',
+    infoText: 'skriv noe fornuftig her',
+  };
+  companyInfoEdit = false;
 
   onCompChange(event: any) {
-    this.selectedCompany= this.company_list.find(e => e.orgnr===this.selectedCompanyId);
+    this.selectedCompany = this.company_list.find(
+      (e) => e.orgnr === this.selectedCompanyId
+    );
     this.getDocs(this.selectedCompanyId);
-  }
-
-  getCompanies(orgnr?:string): void {
-    this.klikket = true;
-    this.http
-      .get(this.host + this.webAppComp + this.getRandomUrl(), {
-        headers: this.httpHeaders,
-        responseType: 'json',
-        observe: 'body',
-        withCredentials: true,
-      })
-      .subscribe((result: any) => {
-        if (result && result[0].login && result[0].login !== 'yes') {
-          this.loggedIn = false;
-          this.klikket = false;
-          return;
-        }
-
-        this.company_list = result;
-        this.selectedCompany = this.company_list.find((c)=>c.orgnr===orgnr);
-        this.selectedCompanyId = this.selectedCompany.orgnr;
-        this.getDocs(this.selectedCompanyId);
-      });
   }
 
   isScriptError(): boolean {
@@ -542,41 +614,6 @@ export class AppComponent implements OnInit {
     } else {
       this.new_company = '';
     }
-  }
-
-  saveNewCompany() {
-    if (
-      this.new_company.trim() === '!!Feil!!' ||
-      this.new_company.trim() === '' ||
-      this.new_orgnr.trim().length !== 9
-    )
-      return;
-
-    const body = {
-      orgNr: this.new_orgnr,
-      companyName: this.new_company,
-      infoJSON: this.new_info_json,
-    };
-    this.klikket = true;
-
-    this.http
-      .post(this.host + this.saveDocUrl + this.getRandomUrl(), body, {
-        headers: this.httpHeaders,
-        responseType: 'text',
-        observe: 'body',
-        withCredentials: true,
-      })
-      .subscribe((result: any) => {
-        if (result && result[0].login && result[0].login !== 'yes') {
-          this.loggedIn = false;
-          return;
-        }
-        this.getCompanies(this.new_orgnr);
-        this.new_company = '';
-        this.new_orgnr = '';
-        this.new_info_json = {};
-        this.klikket = true;
-      });
   }
 
   getRandomUrl(): string {
