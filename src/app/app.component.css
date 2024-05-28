@@ -5,6 +5,10 @@
     border-color: red;
 }
 
+.contactinfo {
+    margin:15px;
+}
+
 button {
     height: 25px;
 }
