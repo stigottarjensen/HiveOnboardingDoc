@@ -201,11 +201,15 @@ export class AppComponent implements OnInit {
           );
           this.selectedCompanyId = orgnr;
         }
+        else {
+          this.selectedCompany = this.company_list[0];
+          this.selectedCompanyId = this.selectedCompany.orgnr;
+        }
         this.getDocs(this.selectedCompanyId);
       });
   }
 
-  getDocs(compId?: string): void {
+  getDocs(compId: string): void {
     const aesparams = this.getAESParams();
     const body = {
       companyId: compId,
