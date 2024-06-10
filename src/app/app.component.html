@@ -228,7 +228,7 @@
       </div>
     </div>
     <div *ngIf="loggedIn && showSchemaInfo" class="bdiv">
-      <button (click)="save()" [ngClass]="{'active':changed}"
+      <button (click)="saveDoc()" [ngClass]="{'active':changed}"
         [ngStyle]="{'background-color':isScriptError()?'orange':''}">Lagre</button>&nbsp;
       <button (click)="copyContent()">Kopier json</button>&nbsp;
       <button (click)="saveJSON2File()">Lagre json fil</button>

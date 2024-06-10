@@ -139,7 +139,6 @@ export class AppComponent implements OnInit {
     body.cryptData = this.doCrypt(true, JSON.stringify(this.selectedCompany));
     this.klikket = true;
     console.log(body);
-    
 
     this.http
       .post(this.host + this.updateCompanyUrl + this.getRandomUrl(), body, {
@@ -200,8 +199,7 @@ export class AppComponent implements OnInit {
             (c) => c.orgnr === orgnr
           );
           this.selectedCompanyId = orgnr;
-        }
-        else {
+        } else {
           this.selectedCompany = this.company_list[0];
           this.selectedCompanyId = this.selectedCompany.orgnr;
         }
@@ -372,13 +370,15 @@ export class AppComponent implements OnInit {
           service === element.serviceName
       );
     } else {
-      i = 0;
-      this.chosenItem =
-        this.doc_list[0].rootDomain +
-        '_' +
-        this.doc_list[0].domain +
-        '_' +
-        this.doc_list[0].serviceName;
+      if (this.chosenItem === '') {
+        i = 0;
+        this.chosenItem =
+          this.doc_list[0].rootDomain +
+          '_' +
+          this.doc_list[0].domain +
+          '_' +
+          this.doc_list[0].serviceName;
+      }
     }
     this.the_doc = this.doc_list[i];
     this.textarea_content = this.the_doc.webjs;
@@ -564,7 +564,7 @@ export class AppComponent implements OnInit {
     return err;
   }
 
-  save(): void {
+  saveDoc(): void {
     if (!this.changed) return;
     if (this.isScriptError()) return;
     if (!this.the_doc.companyId || this.the_doc.companyId.length !== 9)
