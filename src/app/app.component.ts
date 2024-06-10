@@ -361,7 +361,9 @@ export class AppComponent implements OnInit {
       if (!this.doc_list) this.doc_list = [];
       this.doc_list.push(JSON.parse(jt));
     }
+    let newDoc = false;
     if (domain) {
+      newDoc = true;
       this.chosenItem = root + '_' + domain + '_' + service;
       i = this.doc_list.findIndex(
         (element) =>
@@ -371,6 +373,7 @@ export class AppComponent implements OnInit {
       );
     } else {
       if (this.chosenItem === '') {
+        newDoc = true;
         i = 0;
         this.chosenItem =
           this.doc_list[0].rootDomain +
@@ -380,7 +383,7 @@ export class AppComponent implements OnInit {
           this.doc_list[0].serviceName;
       }
     }
-    this.the_doc = this.doc_list[i];
+    if (newDoc) this.the_doc = this.doc_list[i];
     this.textarea_content = this.the_doc.webjs;
     this.the_doc_text = JSON.stringify(this.the_doc, null, 4);
     this.makeUrls(this.the_doc);
@@ -552,6 +555,7 @@ export class AppComponent implements OnInit {
     this.selectedCompany = this.company_list.find(
       (e) => e.orgnr === this.selectedCompanyId
     );
+    this.chosenItem = '';
     this.getDocs(this.selectedCompanyId);
   }
 
