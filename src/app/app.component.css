@@ -20,6 +20,7 @@ ul {
 .tree {
     --spacing: 1.5rem;
     --radius: 10px;
+    padding-left: 0px;
 }
 
 .tree li {
@@ -76,17 +77,21 @@ ul {
     content: '';
     display: block;
     position: absolute;
-    top: calc(var(--spacing) / 2 - var(--radius));
-    left: calc(var(--spacing) - var(--radius) - 1px);
-    width: calc(2 * var(--radius));
-    height: calc(2 * var(--radius));
+    top: calc(var(--spacing) / 3 );
+    left: calc(var(--spacing) - 1px);
+    width: calc(1 * var(--radius));
+    height: calc(1 * var(--radius));
     border-radius: 50%;
     background: #ddd;
 }
 
 .tree summary::before {
     z-index: 1;
-    background: #696 url('expand-collapse.svg') 0 0;
+    top: calc(var(--spacing) / 2 - var(--radius));
+    left: calc(var(--spacing) - var(--radius) - 1px);
+    width: calc(2 * var(--radius));
+    height: calc(2 * var(--radius));
+    background: rgb(216, 200, 231) url('expand-collapse.svg') 0 0;
 }
 
 .tree details[open]>summary::before {
@@ -169,7 +174,7 @@ li {
 }
 
 td {
-    padding: 1px;
+    padding: 3px;
     padding-left: 5x;
 }
 
@@ -228,7 +233,6 @@ span span {
 
 .sidemenu {
     width: fit-content;
-    background-color: rgb(241, 245, 244);
 }
 
 .bottom {
@@ -265,7 +269,7 @@ textarea {
     border-color: rgb(49, 200, 205);
     font-size: 500;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    background-color: rgb(246, 251, 251);
+    background-color: rgb(250, 251, 251);
 }
 
 .mark-row {
