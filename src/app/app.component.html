@@ -106,17 +106,24 @@
 
     <div *ngIf="loggedIn && showSchemaInfo" class="container">
       <div class="sidemenu">
-        <ul>
-          <li *ngFor="let root of treeMenu | keyvalue;">&nbsp;{{root.key}}
-            <ul>
-              <li *ngFor="let domain of root.value | keyvalue;">&nbsp;{{domain.key}}
-                <ul>
-                  <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)">
-                    <span [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">&nbsp;{{service}}&nbsp;</span>
-                  </li>
-                </ul>
-              </li>
-            </ul>
+        <ul class="tree">
+          <li *ngFor="let root of treeMenu | keyvalue;" >
+            <details open>
+              <summary>{{root.key}}</summary>
+              <ul>
+                <li *ngFor="let domain of root.value | keyvalue;">
+                  <details open>
+                    <summary>{{domain.key}}</summary>
+                    <ul>
+                      <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)">
+                        <span
+                          [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">&nbsp;{{service}}&nbsp;</span>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              </ul>
+            </details>
           </li>
         </ul>
         <div class="bottom">&nbsp;</div>
@@ -126,39 +133,39 @@
           <td colspan="1" class="marked-td">HIVE ROOT Domain</td>
           <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
           </td>
-          <td colspan="1" class="marked-td">beskrivelse</td>
+          <td colspan="1" rowspan="4" class="tdgray">&nbsp;</td>
         </tr>
         <tr>
           <td colspan="1" class="marked-td">Domene navn</td>
           <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" /></td>
-          <td colspan="1" class="marked-td">beskrivelse</td>
+
         </tr>
         <tr>
           <td colspan="1" class="marked-td">Tjeneste navn</td>
           <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
           </td>
-          <td colspan="1" class="marked-td">beskrivelse</td>
+
         </tr>
         <tr>
           <td colspan="1">Brukernavn</td>
           <td colspan="1"><input [(ngModel)]="the_doc.userName" (change)="input_changed($event)" /></td>
-          <td colspan="1">beskrivelse</td>
+
         </tr>
 
         <tr>
           <td colspan="1">Host url</td>
-          <td colspan="1"><span>{{the_doc['hostUrl']}}</span></td>
-          <td colspan="1">beskrivelse</td>
+          <td colspan="2"><span>{{the_doc['hostUrl']}}</span></td>
+
         </tr>
         <tr>
           <td colspan="1">Servis url</td>
-          <td colspan="1"><span>{{the_doc['serviceUrl']}}</span></td>
-          <td colspan="1">beskrivelse</td>
+          <td colspan="2"><span>{{the_doc['serviceUrl']}}</span></td>
+
         </tr>
         <tr>
           <td colspan="1">Data skjema</td>
           <td colspan="1"><input [(ngModel)]="rtwXMLTags" (change)="input_changed($event)" /></td>
-          <td colspan="1">beskrivelse</td>
+          <td colspan="1" rowspan="1" class="tdgray">&nbsp;</td>
         </tr>
         <tr>
           <td colspan="3"><span>{{the_doc['xml']}}</span></td>
@@ -166,7 +173,7 @@
         <tr>
           <td colspan="1">Kommando skjema</td>
           <td colspan="1"><input [(ngModel)]="cmdXMLTags" (change)="input_changed($event)" /></td>
-          <td colspan="1">beskrivelse</td>
+          <td colspan="1" rowspan="1" class="tdgray">&nbsp;</td>
         </tr>
         <tr>
           <td colspan="3"><span>{{the_doc['cmdxml']}}</span>
@@ -178,7 +185,7 @@
           <td class="num_td"><input [(ngModel)]="the_doc.quantity" (change)="input_changed($event)"
               class="slim_input" />
           </td>
-          <td colspan="1">beskrivelse</td>
+          <td colspan="1" rowspan="1" class="tdgray">&nbsp;</td>
         </tr>
         <tr>
           <td [ngClass]="{'mark-row':editField==='webjs'}"
@@ -191,20 +198,18 @@
           <td>Time Channel Req</td>
           <td class="num_td"><input [(ngModel)]="the_doc.timeForChannelRequest" (keyup)="input_changed($event)" />
           </td>
-          <td colspan="1">beskrivelse</td>
+          <td colspan="1" rowspan="3" class="tdgray">&nbsp;</td>
         </tr>
         <tr>
           <td>Desc</td>
           <td class="num_td"><input [(ngModel)]="the_doc.desc" (keyup)="input_changed($event)" />
           </td>
-          <td colspan="1">beskrivelse</td>
         </tr>
         <tr>
           <td [ngClass]="{'mark-row':editField==='searchTerms'}">Search term</td>
           <td class="num_td"><input [(ngModel)]="the_doc.searchTerms" (keyup)="input_changed($event)"
               (focus)="editTextArea('searchTerms')" />
           </td>
-          <td colspan="1">beskrivelse</td>
         </tr>
         <tr>
           <td [ngClass]="{'mark-row':editField==='masterScript'}"
