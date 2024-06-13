@@ -50,24 +50,65 @@
     </table>
 
     <div *ngIf="loggedIn" class="top_container">
-      <div>
-        <select [(ngModel)]="selectedCompanyId" (change)="onCompChange($event)">
-          <option *ngFor="let comp of company_list;" [value]="comp.orgnr" [selected]="comp.orgnr===selectedCompanyId">
-            {{comp.name}}</option>
-        </select>&nbsp;
-        <input type="checkbox" [(ngModel)]="showCompanyInfo" id="companyCheck"> <label for="companyCheck"> Vis
-          firmainfo</label>
-        &nbsp;&nbsp;
-        <input type="checkbox" [(ngModel)]="showSchemaInfo" id="schemaCheck"> <label for="schemaCheck"> Vis
-          skjemainfo</label>
-      </div>
-      <div *ngIf="showCompanyInfo">
-        <span>Nytt firma: OrgNr&nbsp;</span><input [(ngModel)]="new_orgnr" class="org_input" maxlength="9"
-          (keyup)="orgNrChange()">&nbsp;
-        <span>&nbsp;Navn&nbsp;<span>{{new_company}}</span>&nbsp;</span>
-        <button (click)="saveNewCompany()"
-          [ngClass]="{'active':new_company.trim()!=='!!Feil!!' && new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
-      </div>
+      <table>
+        <tr>
+          <th colspan="3">
+            Velg :
+          </th>
+          <th colspan="3" *ngIf="showCompanyInfo">
+            Nytt firma
+          </th>
+        </tr>
+        <tr>
+          <th>
+            Velg firma
+          </th>
+          <th>
+            <label for="companyCheck"> Vis
+              firmainfo</label>
+          </th>
+          <th>
+            <label for="schemaCheck"> Vis
+              skjemainfo</label>
+          </th>
+          <th *ngIf="showCompanyInfo">
+            Orgnummer
+          </th>
+          <th *ngIf="showCompanyInfo">
+            Firmanavn
+          </th>
+          <th *ngIf="showCompanyInfo">
+            Lagre
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <select [(ngModel)]="selectedCompanyId" (change)="onCompChange($event)">
+              <option *ngFor="let comp of company_list;" [value]="comp.orgnr"
+                [selected]="comp.orgnr===selectedCompanyId">
+                {{comp.name}}</option>
+            </select>
+          </td>
+          <td>
+            <input type="checkbox" [(ngModel)]="showCompanyInfo" id="companyCheck">
+          </td>
+          <td>
+            <input type="checkbox" [(ngModel)]="showSchemaInfo" id="schemaCheck">
+          </td>
+
+
+          <!-- <div *ngIf="showCompanyInfo"> -->
+          <td *ngIf="showCompanyInfo">
+            <input [(ngModel)]="new_orgnr" class="org_input" maxlength="9" (keyup)="orgNrChange()">
+          </td>
+          <td *ngIf="showCompanyInfo">{{new_company}}</td>
+          <td *ngIf="showCompanyInfo">
+            <button (click)="saveNewCompany()"
+              [ngClass]="{'active':new_company.trim()!=='!!Feil!!' && new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
+
+          </td>
+        </tr>
+      </table>
     </div>
 
     <div *ngIf="loggedIn && showCompanyInfo" class="contactinfo">
@@ -76,13 +117,13 @@
         firmainfo</label>
       <table>
         <tr>
-          <td>Navn</td>
+          <td style="width:30%">Navn</td>
           <td>Infotekst</td>
         </tr>
         <tr>
           <td *ngIf="!companyInfoEdit">{{selectedCompany.contactName}}</td>
           <td *ngIf="companyInfoEdit"><input [(ngModel)]="selectedCompany.contactName"></td>
-          <td *ngIf="!companyInfoEdit" rowspan="5">{{selectedCompany.infoText}}</td>
+          <td *ngIf="!companyInfoEdit" rowspan="5" class="text-wrap">{{selectedCompany.infoText}}</td>
           <td *ngIf="companyInfoEdit" rowspan="5">
             <textarea rows="15" cols="60" [(ngModel)]="selectedCompany.infoText"></textarea>
           </td>
@@ -107,7 +148,7 @@
     <div *ngIf="loggedIn && showSchemaInfo" class="container">
       <div class="sidemenu">
         <ul class="tree">
-          <li *ngFor="let root of treeMenu | keyvalue;" >
+          <li *ngFor="let root of treeMenu | keyvalue;">
             <details open>
               <summary>{{root.key}}</summary>
               <ul>
@@ -129,6 +170,7 @@
         <div class="bottom">&nbsp;</div>
       </div>
       <table>
+        <tr><td></td></tr>
         <tr>
           <td colspan="1" class="marked-td">HIVE ROOT Domain</td>
           <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
