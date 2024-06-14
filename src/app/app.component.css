@@ -105,9 +105,9 @@ ul {
     background: rgb(216, 200, 231) url('expand-collapse.svg') 0 0;
 }
 
-.tree details[open]>summary::before {
+ .tree details[open]>summary::before {
     background-position: calc(-2 * var(--radius)) 0;
-}
+} 
 
 ul li ul li ul li span {
     cursor: pointer;

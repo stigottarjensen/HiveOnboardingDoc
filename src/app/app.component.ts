@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { doc_template } from './app.constants';
 import { catchError } from 'rxjs';
 import * as forge from 'node-forge';
@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   title = 'HiveOnboardingDoc';
   loggedIn: boolean = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cdRef: ChangeDetectorRef) {}
 
   httpHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
@@ -362,8 +362,17 @@ export class AppComponent implements OnInit {
     return start + end;
   }
 
-  toggle(s: string) {
+  toggle(s: string, event:any) {
+    //event.stopPropagation();
+    s = s.replace('.','');
     this.treeMenuToggle[s] = !this.treeMenuToggle[s];
+    console.log(event,this.treeMenuToggle);
+    
+  }
+
+  getToggle(s:string):boolean {
+    s = s.replace('.','');
+    return this.treeMenuToggle[s];
   }
 
   copyContent = async () => {
@@ -446,17 +455,19 @@ export class AppComponent implements OnInit {
       if (!m) {
         m = new Map<string, any[]>();
         M.set(element.rootDomain, m);
-        this.treeMenuToggle[element.rootDomain] = true;
+        this.treeMenuToggle[element.rootDomain.replace('.','')] = true;
       }
       let snList = m.get(element.domain);
+      this.treeMenuToggle[element.rootDomain.replace('.','') + element.domain] = true;
       if (!snList) {
         const sl = [element.serviceName];
         m.set(element.domain, sl);
-        this.treeMenuToggle[element.rootDomain + element.domain] = true;
       } else {
         snList.push(element.serviceName);
       }
     });
+    console.log(this.treeMenuToggle);
+    
     return M;
   }
 
