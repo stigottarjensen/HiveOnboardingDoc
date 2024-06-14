@@ -198,6 +198,10 @@ input {
     min-height: 99%;
 }
 
+input:read-only {
+    background-color: rgb(237, 237, 237);
+}
+
 span span {
     background-color: rgb(251, 251, 212);
     padding: 3px;

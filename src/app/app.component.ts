@@ -26,6 +26,9 @@ export class AppComponent implements OnInit {
   klikket = false;
   showSchemaInfo = false;
   showCompanyInfo = true;
+  newRootDomain = false;
+  newSubDomain = false;
+  newService = false;
 
   new_user = {
     name: '',
@@ -48,7 +51,7 @@ export class AppComponent implements OnInit {
   pubKey: forge.pki.rsa.PublicKey | any;
   validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-  makeRamdomPassPhrase(): string {
+  makeRandomPassPhrase(): string {
     const pwlen = 300;
     const pwchars =
       'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -67,7 +70,7 @@ export class AppComponent implements OnInit {
 
   getAESParams(): any {
     const salt = forge.random.getBytesSync(32);
-    const pass = this.makeRamdomPassPhrase();
+    const pass = this.makeRandomPassPhrase();
     const cryptpass = this.pubKey.encrypt(pass);
     const iv = forge.random.getBytesSync(16);
     return { salt: salt, pass: pass, cryptpass: cryptpass, iv: iv };
@@ -121,6 +124,14 @@ export class AppComponent implements OnInit {
     }
   }
 
+  isDomainsEditable(level: string): boolean {
+    if (this.newRootDomain) return true;
+    if (level === 'sub') return this.newRootDomain || this.newSubDomain;
+    if (level === 'service')
+      return this.newRootDomain || this.newSubDomain || this.newService;
+    return false;
+  }
+
   saveNewCompany() {
     if (
       this.new_company.trim() === '!!Feil!!' ||
@@ -138,7 +149,6 @@ export class AppComponent implements OnInit {
     };
     body.cryptData = this.doCrypt(true, JSON.stringify(this.selectedCompany));
     this.klikket = true;
-    console.log(body);
 
     this.http
       .post(this.host + this.updateCompanyUrl + this.getRandomUrl(), body, {
@@ -148,8 +158,6 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
-        console.log(result);
-
         if (result && result[0].login && result[0].login !== 'yes') {
           this.loggedIn = false;
           return;
@@ -208,6 +216,9 @@ export class AppComponent implements OnInit {
   }
 
   getDocs(compId: string): void {
+    this.newRootDomain = false;
+    this.newSubDomain = false;
+    this.newService = false;
     const aesparams = this.getAESParams();
     const body = {
       companyId: compId,
@@ -245,7 +256,13 @@ export class AppComponent implements OnInit {
           this.doc_list.push(JSON.parse(JSON.stringify(doc_template)));
           this.doc_list[0].companyId = compId;
         }
-        this.setDoc();
+        if (this.the_doc) {
+          this.setDoc(
+            this.the_doc.rootDomain,
+            this.the_doc.domain,
+            this.the_doc.serviceName
+          );
+        } else this.setDoc();
       });
   }
 
@@ -345,6 +362,10 @@ export class AppComponent implements OnInit {
     return start + end;
   }
 
+  toggle(s: string) {
+    this.treeMenuToggle[s] = !this.treeMenuToggle[s];
+  }
+
   copyContent = async () => {
     try {
       await navigator.clipboard.writeText(this.the_doc_text);
@@ -354,6 +375,9 @@ export class AppComponent implements OnInit {
   };
 
   setDoc(root?: string, domain?: string, service?: string): void {
+    this.newRootDomain = false;
+    this.newSubDomain = false;
+    this.newService = false;
     let i = 0;
     if (!this.doc_list || this.doc_list.length < 1) {
       const jt = JSON.stringify(doc_template);
@@ -383,7 +407,7 @@ export class AppComponent implements OnInit {
           this.doc_list[0].serviceName;
       }
     }
-    if (newDoc) this.the_doc = this.doc_list[i];
+    if (newDoc || !this.the_doc) this.the_doc = this.doc_list[i];
     this.textarea_content = this.the_doc.webjs;
     this.the_doc_text = JSON.stringify(this.the_doc, null, 4);
     this.makeUrls(this.the_doc);
@@ -402,8 +426,12 @@ export class AppComponent implements OnInit {
     Object.keys(this.scriptFields).forEach((sfStr) => this.testScript(sfStr));
     this.editField = 'webjs';
     this.treeMenu = this.makeTreeMenuList();
+    console.log(this.treeMenu);
+
     this.klikket = false;
   }
+
+  treeMenuToggle: any = {};
 
   makeTreeMenuList(): Map<string, Map<string, any[]>> | any {
     if (
@@ -418,11 +446,13 @@ export class AppComponent implements OnInit {
       if (!m) {
         m = new Map<string, any[]>();
         M.set(element.rootDomain, m);
+        this.treeMenuToggle[element.rootDomain] = true;
       }
       let snList = m.get(element.domain);
       if (!snList) {
         const sl = [element.serviceName];
         m.set(element.domain, sl);
+        this.treeMenuToggle[element.rootDomain + element.domain] = true;
       } else {
         snList.push(element.serviceName);
       }
@@ -556,6 +586,7 @@ export class AppComponent implements OnInit {
       (e) => e.orgnr === this.selectedCompanyId
     );
     this.chosenItem = '';
+    this.the_doc = doc_template;
     this.getDocs(this.selectedCompanyId);
   }
 

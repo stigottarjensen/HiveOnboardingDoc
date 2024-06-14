@@ -89,12 +89,12 @@
                 {{comp.name}}</option>
             </select>
           </td>
-          <td>
+          <th>
             <input type="checkbox" [(ngModel)]="showCompanyInfo" id="companyCheck">
-          </td>
-          <td>
+          </th>
+          <th>
             <input type="checkbox" [(ngModel)]="showSchemaInfo" id="schemaCheck">
-          </td>
+          </th>
 
 
           <!-- <div *ngIf="showCompanyInfo"> -->
@@ -110,7 +110,7 @@
         </tr>
       </table>
     </div>
-
+    <div class="bottom">&nbsp;</div>
     <div *ngIf="loggedIn && showCompanyInfo" class="contactinfo">
       <h3>Kontaktinfo</h3>
       <input type="checkbox" [(ngModel)]="companyInfoEdit" id="companyEditCheck"> <label for="companyEditCheck">Rediger
@@ -149,11 +149,11 @@
       <div class="sidemenu">
         <ul class="tree">
           <li *ngFor="let root of treeMenu | keyvalue;">
-            <details open>
+            <details [open]="treeMenuToggle[root.key]" (click)="toggle(root.key)">
               <summary>{{root.key}}</summary>
               <ul>
                 <li *ngFor="let domain of root.value | keyvalue;">
-                  <details open>
+                  <details [open]="treeMenuToggle[root.key+domain.key]" (click)="toggle(root.key+domain.key)">
                     <summary>{{domain.key}}</summary>
                     <ul>
                       <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)">
@@ -170,23 +170,22 @@
         <div class="bottom">&nbsp;</div>
       </div>
       <table>
-        <tr><td></td></tr>
         <tr>
           <td colspan="1" class="marked-td">HIVE ROOT Domain</td>
-          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.rootDomain" (change)="input_changed($event)" />
+          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.rootDomain" [readOnly]="!isDomainsEditable('root')" (change)="input_changed($event)" />
           </td>
-          <td colspan="1" rowspan="4" class="tdgray">&nbsp;</td>
+          <td colspan="1" rowspan="1" class="tdgray"> <button (click)="newRootDomain=true">Ny</button></td>
         </tr>
         <tr>
           <td colspan="1" class="marked-td">Domene navn</td>
-          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.domain" (change)="input_changed($event)" /></td>
-
+          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.domain" [readOnly]="!isDomainsEditable('sub')" (change)="input_changed($event)" /></td>
+          <td colspan="1" rowspan="1" class="tdgray"> <button (click)="newSubDomain=true">Ny</button></td>
         </tr>
         <tr>
           <td colspan="1" class="marked-td">Tjeneste navn</td>
-          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.serviceName" (change)="input_changed($event)" />
+          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.serviceName" [readOnly]="!isDomainsEditable('service')" (change)="input_changed($event)" />
           </td>
-
+          <td colspan="1" rowspan="1" class="tdgray"> <button (click)="newService=true">Ny</button></td>
         </tr>
         <tr>
           <td colspan="1">Brukernavn</td>
