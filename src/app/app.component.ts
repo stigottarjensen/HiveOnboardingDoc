@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { doc_template } from './app.constants';
 import { catchError } from 'rxjs';
 import * as forge from 'node-forge';
@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
   title = 'HiveOnboardingDoc';
   loggedIn: boolean = false;
 
-  constructor(private http: HttpClient, private cdRef: ChangeDetectorRef) {}
+  constructor(private http: HttpClient, private elementRef: ElementRef) {}
 
   httpHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
@@ -362,16 +362,15 @@ export class AppComponent implements OnInit {
     return start + end;
   }
 
-  toggle(s: string, event:any) {
-    //event.stopPropagation();
-    s = s.replace('.','');
-    this.treeMenuToggle[s] = !this.treeMenuToggle[s];
-    console.log(event,this.treeMenuToggle);
-    
+  
+  toggle(s: string, event: any) {
+    const rs = s.replace('.', '');
+    this.treeMenuToggle[rs] = !this.treeMenuToggle[rs];
+    console.log('toggle', this.treeMenuToggle);
   }
 
-  getToggle(s:string):boolean {
-    s = s.replace('.','');
+  getToggle(s: string): boolean {
+    s = s.replace('.', '');
     return this.treeMenuToggle[s];
   }
 
@@ -455,10 +454,12 @@ export class AppComponent implements OnInit {
       if (!m) {
         m = new Map<string, any[]>();
         M.set(element.rootDomain, m);
-        this.treeMenuToggle[element.rootDomain.replace('.','')] = true;
+        this.treeMenuToggle[element.rootDomain.replace('.', '')] = true;
       }
       let snList = m.get(element.domain);
-      this.treeMenuToggle[element.rootDomain.replace('.','') + element.domain] = true;
+      this.treeMenuToggle[
+        element.rootDomain.replace('.', '') + element.domain
+      ] = true;
       if (!snList) {
         const sl = [element.serviceName];
         m.set(element.domain, sl);
@@ -467,7 +468,7 @@ export class AppComponent implements OnInit {
       }
     });
     console.log(this.treeMenuToggle);
-    
+
     return M;
   }
 

@@ -149,11 +149,11 @@
       <div class="sidemenu">
         <ul class="tree">
           <li *ngFor="let root of treeMenu | keyvalue;">
-            <details [open]="getToggle(root.key)" >
-              <summary (click)="toggle(root.key, $event)">{{root.key}}</summary>
+            <details open ng-open ="getToggle(root.key)" >
+              <summary (click)="toggle(root.key, $event)" >{{root.key}}</summary>
               <ul>
                 <li *ngFor="let domain of root.value | keyvalue;">
-                  <details [open]="getToggle(root.key+domain.key)">
+                  <details open ng-open ="getToggle(root.key+domain.key)">
                     <summary (click)="toggle(root.key+domain.key, $event)">{{domain.key}}</summary>
                     <ul>
                       <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)">
