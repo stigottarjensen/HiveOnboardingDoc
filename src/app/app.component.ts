@@ -1,4 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  JsonpClientBackend,
+} from '@angular/common/http';
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { doc_template } from './app.constants';
 import { catchError } from 'rxjs';
@@ -362,7 +366,6 @@ export class AppComponent implements OnInit {
     return start + end;
   }
 
-  
   toggle(s: string, event: any) {
     const rs = s.replace('.', '');
     this.treeMenuToggle[rs] = !this.treeMenuToggle[rs];
@@ -382,7 +385,12 @@ export class AppComponent implements OnInit {
     }
   };
 
-  setDoc(root?: string, domain?: string, service?: string): void {
+  setDoc(
+    root?: string,
+    domain?: string,
+    service?: string,
+    clicked?: boolean
+  ): void {
     this.newRootDomain = false;
     this.newSubDomain = false;
     this.newService = false;
@@ -433,8 +441,7 @@ export class AppComponent implements OnInit {
     this.rtwXMLTags = this.getXMLTags(this.the_doc.xml);
     Object.keys(this.scriptFields).forEach((sfStr) => this.testScript(sfStr));
     this.editField = 'webjs';
-    this.treeMenu = this.makeTreeMenuList();
-    console.log(this.treeMenu);
+    if (!clicked) this.treeMenu = this.makeTreeMenuList();
 
     this.klikket = false;
   }
@@ -454,11 +461,13 @@ export class AppComponent implements OnInit {
       if (!m) {
         m = new Map<string, any[]>();
         M.set(element.rootDomain, m);
+
         this.treeMenuToggle[element.rootDomain.replace('.', '')] = true;
       }
       let snList = m.get(element.domain);
+
       this.treeMenuToggle[
-        element.rootDomain.replace('.', '') + element.domain
+        element.rootDomain.replace('.', '') + '_' + element.domain
       ] = true;
       if (!snList) {
         const sl = [element.serviceName];
@@ -467,7 +476,7 @@ export class AppComponent implements OnInit {
         snList.push(element.serviceName);
       }
     });
-    console.log(this.treeMenuToggle);
+    console.log(M);
 
     return M;
   }
@@ -494,7 +503,7 @@ export class AppComponent implements OnInit {
     } catch (err: any) {
       this.scriptError = err;
       this.scriptFields[sfStr].error = true;
-      this.scriptFields[sfStr].func = undefined;
+      this.scriptFields[sfStr].func = 0;
     }
   }
 

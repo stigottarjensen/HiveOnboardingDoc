@@ -153,12 +153,12 @@
               <summary (click)="toggle(root.key, $event)" >{{root.key}}</summary>
               <ul>
                 <li *ngFor="let domain of root.value | keyvalue;">
-                  <details open ng-open ="getToggle(root.key+domain.key)">
-                    <summary (click)="toggle(root.key+domain.key, $event)">{{domain.key}}</summary>
+                  <details open ng-open ="getToggle(root.key+'_'+domain.key)">
+                    <summary (click)="toggle(root.key+'_'+domain.key, $event)">{{domain.key}}</summary>
                     <ul>
-                      <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service)">
+                      <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service, true)">
                         <span
-                          [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">&nbsp;{{service}}&nbsp;</span>
+                          [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">{{service}}</span>
                       </li>
                     </ul>
                   </details>
