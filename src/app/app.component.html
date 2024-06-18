@@ -231,9 +231,9 @@
         <tr>
           <td [ngClass]="{'mark-row':editField==='webjs'}"
             [ngStyle]="{'background-color':scriptFields.webjs.error?'orange':''}">Web js</td>
-          <td class="num_td"><input [(ngModel)]="the_doc.webjs" (keyup)="input_changed($event)"
+          <td class="num_td"><input [(ngModel)]="the_doc.webjs" (change)="input_changed($event)"
               (focus)="editTextArea('webjs')" /></td>
-          <td colspan="1">{{scriptFields.webjs.func()}}</td>
+          <td colspan="1">{{chosenItem===''?'':scriptFields.webjs.func()}}</td>
         </tr>
         <tr>
           <td>Time Channel Req</td>
@@ -255,18 +255,18 @@
         <tr>
           <td [ngClass]="{'mark-row':editField==='masterScript'}"
             [ngStyle]="{'background-color':scriptFields.masterScript.error?'orange':''}">MasterScript</td>
-          <td class="num_td"><input [(ngModel)]="the_doc.masterScript" (keyup)="input_changed($event)"
+          <td class="num_td"><input [(ngModel)]="the_doc.masterScript" (change)="input_changed($event)"
               (focus)="editTextArea('masterScript')" />
           </td>
-          <td colspan="1">{{scriptFields.masterScript.func()}}</td>
+          <td colspan="1">{{chosenItem===''?'':scriptFields.masterScript.func()}}</td>
         </tr>
         <tr>
           <td [ngClass]="{'mark-row':editField==='preMasterScript'}"
             [ngStyle]="{'background-color':scriptFields.preMasterScript.error?'orange':''}">PreMasterScript</td>
-          <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (keyup)="input_changed($event)"
+          <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (change)="input_changed($event)"
               (focus)="editTextArea('preMasterScript')" />
           </td>
-          <td colspan="1">{{scriptFields.preMasterScript.func()}}</td>
+          <td colspan="1">{{chosenItem===''?'':scriptFields.preMasterScript.func()}}</td>
         </tr>
       </table>
       <div><textarea rows="15" cols="60" (keyup)="editTextArea($event)" [(ngModel)]="textarea_content"></textarea>

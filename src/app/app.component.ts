@@ -367,9 +367,16 @@ export class AppComponent implements OnInit {
   }
 
   toggle(s: string, event: any) {
+   // event.stopPropagation();
+    if (this.chosenItem.includes(s)) {
+      this.chosenItem ='';
+      this.the_doc = doc_template;
+      this.rtwXMLTags='';
+      this.cmdXMLTags='';
+    }
     const rs = s.replace('.', '');
     this.treeMenuToggle[rs] = !this.treeMenuToggle[rs];
-    console.log('toggle', this.treeMenuToggle);
+
   }
 
   getToggle(s: string): boolean {
@@ -536,8 +543,9 @@ export class AppComponent implements OnInit {
     } else {
       this.editField = '' + e;
       this.textarea_content = this.the_doc[this.editField];
+      this.testScript();
     }
-    this.testScript();
+   
   }
 
   doLogin(event: any): void {
