@@ -1,5 +1,5 @@
 <div [ngClass]="{'body-div': klikket}">
-  <h2 (click)="showUserMenu($event)">Nornir </h2>
+  <h2 (click)="showUserMenu($event)">HIVE onboardingsportal - NORNIR </h2>
   <!--new user menu-->
   <table *ngIf="userMenuVisible">
     <caption>Ny bruker</caption>
@@ -55,7 +55,7 @@
           <th colspan="3">
             Velg :
           </th>
-          <th colspan="3" *ngIf="showCompanyInfo">
+          <th colspan="3" *ngIf="showCompanyInfo && 'newcompany'===selectedCompanyId">
             Nytt firma
           </th>
         </tr>
@@ -71,13 +71,13 @@
             <label for="schemaCheck"> Vis
               skjemainfo</label>
           </th>
-          <th *ngIf="showCompanyInfo">
+          <th *ngIf="showCompanyInfo && 'newcompany'===selectedCompanyId">
             Orgnummer
           </th>
-          <th *ngIf="showCompanyInfo">
+          <th *ngIf="showCompanyInfo && 'newcompany'===selectedCompanyId">
             Firmanavn
           </th>
-          <th *ngIf="showCompanyInfo">
+          <th *ngIf="showCompanyInfo && 'newcompany'===selectedCompanyId">
             Lagre
           </th>
         </tr>
@@ -87,6 +87,7 @@
               <option *ngFor="let comp of company_list;" [value]="comp.orgnr"
                 [selected]="comp.orgnr===selectedCompanyId">
                 {{comp.name}}</option>
+              <option [value]="'newcompany'" [selected]="'newcompany'===selectedCompanyId">- ny -</option>
             </select>
           </td>
           <th>
@@ -98,11 +99,11 @@
 
 
           <!-- <div *ngIf="showCompanyInfo"> -->
-          <td *ngIf="showCompanyInfo">
+          <td *ngIf="showCompanyInfo && 'newcompany'===selectedCompanyId">
             <input [(ngModel)]="new_orgnr" class="org_input" maxlength="9" (keyup)="orgNrChange()">
           </td>
-          <td *ngIf="showCompanyInfo">{{new_company}}</td>
-          <td *ngIf="showCompanyInfo">
+          <td *ngIf="showCompanyInfo && 'newcompany'===selectedCompanyId">{{new_company}}</td>
+          <td *ngIf="showCompanyInfo && 'newcompany'===selectedCompanyId">
             <button (click)="saveNewCompany()"
               [ngClass]="{'active':new_company.trim()!=='!!Feil!!' && new_company.trim()!=='' && new_orgnr.trim().length===9}">Lagre</button>
 
@@ -149,16 +150,15 @@
       <div class="sidemenu">
         <ul class="tree">
           <li *ngFor="let root of treeMenu | keyvalue;">
-            <details open ng-open ="getToggle(root.key)" >
-              <summary (click)="toggle(root.key, $event)" >{{root.key}}</summary>
+            <details open ng-open="getToggle(root.key)">
+              <summary (click)="toggle(root.key, $event)">{{root.key}}</summary>
               <ul>
                 <li *ngFor="let domain of root.value | keyvalue;">
-                  <details open ng-open ="getToggle(root.key+'_'+domain.key)">
+                  <details open ng-open="getToggle(root.key+'_'+domain.key)">
                     <summary (click)="toggle(root.key+'_'+domain.key, $event)">{{domain.key}}</summary>
                     <ul>
                       <li *ngFor="let service of domain.value" (click)="setDoc(root.key, domain.key, service, true)">
-                        <span
-                          [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">{{service}}</span>
+                        <span [ngClass]="{'chosen':chosen(root.key, domain.key, service)}">{{service}}</span>
                       </li>
                     </ul>
                   </details>
@@ -172,18 +172,21 @@
       <table>
         <tr>
           <td colspan="1" class="marked-td">HIVE ROOT Domain</td>
-          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.rootDomain" [readOnly]="!isDomainsEditable('root')" (change)="input_changed($event)" />
+          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.rootDomain"
+              [readOnly]="!isDomainsEditable('root')" (change)="input_changed($event)" />
           </td>
           <td colspan="1" rowspan="1" class="tdgray"> <button (click)="newRootDomain=true">Ny</button></td>
         </tr>
         <tr>
           <td colspan="1" class="marked-td">Domene navn</td>
-          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.domain" [readOnly]="!isDomainsEditable('sub')" (change)="input_changed($event)" /></td>
+          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.domain" [readOnly]="!isDomainsEditable('sub')"
+              (change)="input_changed($event)" /></td>
           <td colspan="1" rowspan="1" class="tdgray"> <button (click)="newSubDomain=true">Ny</button></td>
         </tr>
         <tr>
           <td colspan="1" class="marked-td">Tjeneste navn</td>
-          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.serviceName" [readOnly]="!isDomainsEditable('service')" (change)="input_changed($event)" />
+          <td colspan="1" class="marked-td"><input [(ngModel)]="the_doc.serviceName"
+              [readOnly]="!isDomainsEditable('service')" (change)="input_changed($event)" />
           </td>
           <td colspan="1" rowspan="1" class="tdgray"> <button (click)="newService=true">Ny</button></td>
         </tr>
@@ -232,7 +235,7 @@
           <td [ngClass]="{'mark-row':editField==='webjs'}"
             [ngStyle]="{'background-color':scriptFields.webjs.error?'orange':''}">Web js</td>
           <td class="num_td"><input [(ngModel)]="the_doc.webjs" (change)="input_changed($event)"
-              (focus)="editTextArea('webjs')" /></td>
+              (focus)="editTextArea('webjs')" (blur)="textAreaVisible=false;" /></td>
           <td colspan="1">{{chosenItem===''?'':scriptFields.webjs.func()}}</td>
         </tr>
         <tr>
@@ -248,15 +251,14 @@
         </tr>
         <tr>
           <td [ngClass]="{'mark-row':editField==='searchTerms'}">Search term</td>
-          <td class="num_td"><input [(ngModel)]="the_doc.searchTerms" (keyup)="input_changed($event)"
-              (focus)="editTextArea('searchTerms')" />
+          <td class="num_td"><input [(ngModel)]="the_doc.searchTerms" (keyup)="input_changed($event)" />
           </td>
         </tr>
         <tr>
           <td [ngClass]="{'mark-row':editField==='masterScript'}"
             [ngStyle]="{'background-color':scriptFields.masterScript.error?'orange':''}">MasterScript</td>
           <td class="num_td"><input [(ngModel)]="the_doc.masterScript" (change)="input_changed($event)"
-              (focus)="editTextArea('masterScript')" />
+              (focus)="editTextArea('masterScript')" (blur)="textAreaVisible=false;" />
           </td>
           <td colspan="1">{{chosenItem===''?'':scriptFields.masterScript.func()}}</td>
         </tr>
@@ -264,12 +266,13 @@
           <td [ngClass]="{'mark-row':editField==='preMasterScript'}"
             [ngStyle]="{'background-color':scriptFields.preMasterScript.error?'orange':''}">PreMasterScript</td>
           <td class="num_td"><input [(ngModel)]="the_doc.preMasterScript" (change)="input_changed($event)"
-              (focus)="editTextArea('preMasterScript')" />
+              (focus)="editTextArea('preMasterScript')" (blur)="textAreaVisible=false;" />
           </td>
           <td colspan="1">{{chosenItem===''?'':scriptFields.preMasterScript.func()}}</td>
         </tr>
       </table>
-      <div><textarea rows="15" cols="60" (keyup)="editTextArea($event)" [(ngModel)]="textarea_content"></textarea>
+      <div><textarea rows="15" cols="60" *ngIf="textAreaVisible" (keyup)="editTextArea($event)"
+          [(ngModel)]="textarea_content"></textarea>
         <p>{{scriptError}}</p>
       </div>
     </div>

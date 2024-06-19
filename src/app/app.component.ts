@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
   newRootDomain = false;
   newSubDomain = false;
   newService = false;
+  textAreaVisible=false;
 
   new_user = {
     name: '',
@@ -289,7 +290,7 @@ export class AppComponent implements OnInit {
   rtwXMLTags: string = '';
 
   showUserMenu(event: { shiftKey: any }) {
-    if (event.shiftKey) {
+    if (event.shiftKey && this.loggedIn) {
       this.userMenuVisible = !this.userMenuVisible;
     }
   }
@@ -307,6 +308,8 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((result: any) => {
+        console.log(result);
+        
         this.urlImg = this.urlImgPrefix + result;
         this.new_user.qrcode = result;
         this.klikket = false;
@@ -324,8 +327,8 @@ export class AppComponent implements OnInit {
   }
 
   login: any = {
-    email: 'stigottar@nornir.io',
-    pass: 'filip213',
+    email: '',
+    pass: '',
     code: '',
   };
 
@@ -529,6 +532,7 @@ export class AppComponent implements OnInit {
   scriptError: string = '';
 
   editTextArea(e: any) {
+    this.textAreaVisible = true;
     if (e instanceof KeyboardEvent) {
       if (this.editField) {
         this.the_doc[this.editField] = this.textarea_content;
@@ -603,7 +607,11 @@ export class AppComponent implements OnInit {
   };
   companyInfoEdit = false;
 
+  newCompanyMenu=false;
   onCompChange(event: any) {
+    if (this.selectedCompanyId==='newcompany') {
+      return;
+    }
     this.selectedCompany = this.company_list.find(
       (e) => e.orgnr === this.selectedCompanyId
     );
