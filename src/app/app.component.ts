@@ -1,9 +1,5 @@
-import {
-  HttpClient,
-  HttpHeaders,
-  JsonpClientBackend,
-} from '@angular/common/http';
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { doc_template } from './app.constants';
 import { catchError } from 'rxjs';
 import * as forge from 'node-forge';
@@ -17,7 +13,7 @@ export class AppComponent implements OnInit {
   title = 'HiveOnboardingDoc';
   loggedIn: boolean = false;
 
-  constructor(private http: HttpClient, private elementRef: ElementRef) {}
+  constructor(private http: HttpClient) {}
 
   httpHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
@@ -189,10 +185,8 @@ export class AppComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((res: any) => {
-        console.log(res);
 
         const result = this.doCrypt(false, res, aesparams);
-        console.log(result);
 
         if (
           result &&
@@ -271,6 +265,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const h = window.location.href;
+    if (!h.includes('localhost:4200')) this.host = '';
+    
     this.http
       .get(this.host + this.rsaKeyApp + this.getRandomUrl(), {
         headers: this.httpHeaders,
@@ -367,16 +364,14 @@ export class AppComponent implements OnInit {
   }
 
   toggle(s: string, event: any) {
-   // event.stopPropagation();
     if (this.chosenItem.includes(s)) {
-      this.chosenItem ='';
+      this.chosenItem = '';
       this.the_doc = doc_template;
-      this.rtwXMLTags='';
-      this.cmdXMLTags='';
+      this.rtwXMLTags = '';
+      this.cmdXMLTags = '';
     }
     const rs = s.replace('.', '');
     this.treeMenuToggle[rs] = !this.treeMenuToggle[rs];
-
   }
 
   getToggle(s: string): boolean {
@@ -483,7 +478,6 @@ export class AppComponent implements OnInit {
         snList.push(element.serviceName);
       }
     });
-    console.log(M);
 
     return M;
   }
@@ -545,7 +539,6 @@ export class AppComponent implements OnInit {
       this.textarea_content = this.the_doc[this.editField];
       this.testScript();
     }
-   
   }
 
   doLogin(event: any): void {
