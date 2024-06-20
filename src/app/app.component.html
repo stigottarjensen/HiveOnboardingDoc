@@ -113,7 +113,7 @@
     </div>
     <div class="bottom">&nbsp;</div>
     <div *ngIf="loggedIn && showCompanyInfo" class="contactinfo">
-      <h3>Kontaktinfo</h3>
+      <h3>Kontaktinfo for {{selectedCompany.name}}, orgnr = {{selectedCompanyId}}</h3>
       <input type="checkbox" [(ngModel)]="companyInfoEdit" id="companyEditCheck"> <label for="companyEditCheck">Rediger
         firmainfo</label>
       <table>

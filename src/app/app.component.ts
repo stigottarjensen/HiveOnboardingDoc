@@ -251,6 +251,7 @@ export class AppComponent implements OnInit {
           return;
         }
         this.doc_list = result;
+        
         if (this.doc_list.length < 1) {
           this.doc_list.push(JSON.parse(JSON.stringify(doc_template)));
           this.doc_list[0].companyId = compId;
@@ -429,6 +430,7 @@ export class AppComponent implements OnInit {
       }
     }
     if (newDoc || !this.the_doc) this.the_doc = this.doc_list[i];
+    if (!this.the_doc) this.the_doc = doc_template;
     this.textarea_content = this.the_doc.webjs;
     this.the_doc_text = JSON.stringify(this.the_doc, null, 4);
     this.makeUrls(this.the_doc);
@@ -587,6 +589,8 @@ export class AppComponent implements OnInit {
   }
 
   getXMLTags(xml: string): string {
+    if (!xml || !xml.includes('<'))
+      return '';
     const node = new DOMParser().parseFromString(
       xml,
       'text/xml'
@@ -640,6 +644,8 @@ export class AppComponent implements OnInit {
       companyId: this.the_doc.companyId,
       cryptData: {},
     };
+    console.log(this.the_doc);
+    
     sendData.cryptData = this.doCrypt(true, JSON.stringify(this.the_doc));
 
     this.http
