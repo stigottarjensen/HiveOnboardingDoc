@@ -40,6 +40,16 @@ ul {
     padding-left: calc(2 * var(--spacing) - var(--radius) - 2px);
 }
 
+.tree li:nth-child(odd of .branch) {
+    width:auto;
+    background-color: rgb(254, 243, 229);
+}
+
+.tree li:nth-child(even of .branch) {
+    width:auto;
+    background-color:rgb(247, 251, 255);
+}
+
 .tree ul {
     margin-left: calc(var(--radius) - var(--spacing));
     padding-left: 0;

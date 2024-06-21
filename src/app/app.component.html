@@ -148,10 +148,10 @@
     <div *ngIf="loggedIn && showSchemaInfo" class="container">
       <div class="sidemenu">
         <ul class="tree">
-          <li *ngFor="let root of treeMenu | keyvalue;">
-            <details open ng-open="getToggle(root.key)">
+          <li *ngFor="let root of treeMenu | keyvalue;" class="branch">
+            <details open ng-open="getToggle(root.key)" >
               <summary (click)="toggle(root.key, $event)">{{root.key}}</summary>
-              <ul>
+              <ul >
                 <li *ngFor="let domain of root.value | keyvalue;">
                   <details open ng-open="getToggle(root.key+'_'+domain.key)">
                     <summary (click)="toggle(root.key+'_'+domain.key, $event)">{{domain.key}}</summary>
