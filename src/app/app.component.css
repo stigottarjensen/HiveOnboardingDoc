@@ -42,12 +42,12 @@ ul {
 
 .tree li:nth-child(odd of .branch) {
     width:auto;
-    background-color: rgb(254, 243, 229);
+    background-color: rgb(254, 243, 235);
 }
 
 .tree li:nth-child(even of .branch) {
     width:auto;
-    background-color:rgb(247, 251, 255);
+    background-color:rgb(249, 252, 255);
 }
 
 .tree ul {
