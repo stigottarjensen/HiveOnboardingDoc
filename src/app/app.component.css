@@ -34,6 +34,11 @@ ul {
     padding-left: 0px;
 }
 
+.dummy {
+    color: rgb(214, 247, 247);
+    background-color: rgb(252, 239, 222);
+}
+
 .tree li {
     display: block;
     position: relative;
